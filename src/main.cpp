@@ -61,7 +61,8 @@ int main()
     Shader shader = initShaders();
     Camera camera{{0.0f, 0.0f, -5.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
     Renderer renderer{window, &camera, shader.program};
-    VertexArray cube{Meshes::CubeIdx::vertices, Meshes::CubeIdx::indices};
+    // VertexArray cube{Meshes::CubeIdx::vertices, Meshes::CubeIdx::indices};
+    VertexArray cube{Meshes::Cube::vertices};
     Model modelCube{{&cube}, glm::mat4{1.f}, glm::mat4{1.f}, glm::mat4{1.f}};
     std::vector<Model> models;
     models.push_back(modelCube);
