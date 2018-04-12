@@ -58,8 +58,3 @@ VertexArray::~VertexArray()
     glDeleteBuffers(1, &m_indexBufferId);
     glDeleteVertexArrays(1, &m_id);
 }
-
-void VertexArray::bind()
-{
-    glBindVertexArray(m_id);
-}

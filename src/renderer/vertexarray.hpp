@@ -22,6 +22,6 @@ public:
 
   GLsizei getVertexCount() const { return m_vertexCount; }
   GLsizei getIndexCount() const { return m_indexCount; }
-  
-  void bind();
+
+  void const bind() const { glBindVertexArray(m_id); }
 };
