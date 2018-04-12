@@ -39,7 +39,7 @@ VertexArray::VertexArray(const std::vector<Vertex> &vertices)
 VertexArray::VertexArray(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices)
     : VertexArray{vertices}
 {
-    /* Assumes that the delegated constructor has created and bound the VertexArray at this point */
+    /* NOTE: Assumes that the delegated constructor has created and bound the VertexArray at this point */
 
     // Members
     // (not initialized in mem-list due to delegating constructor)
