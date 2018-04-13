@@ -1,0 +1,1 @@
+Heightmaps `44-terrain.tga` and `fft-terrain.tga` are downloaded from http://computer-graphics.se/TSBK07/laboration-4.html

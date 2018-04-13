@@ -1,0 +1,1 @@
+All models in this directory and its children directories are downloaded from http://computer-graphics.se/TSBK07/laboration-2.html
