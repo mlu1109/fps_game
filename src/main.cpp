@@ -8,6 +8,8 @@
 #include "renderer/camera.hpp"
 #include "renderer/meshes/cube.hpp"
 #include "renderer/vertexarray.hpp"
+#include "obj_parser/mesh.hpp"
+#include "obj_parser/wavefront_object.hpp"
 #include "mouse.hpp"
 #include "callbacks.hpp"
 #include <memory>
@@ -38,6 +40,8 @@ GLFWwindow *initWindow()
         throw std::runtime_error("glewInit failed");
     }
 
+    //glfwSwapInterval(0);
+
     return window;
 }
 
@@ -61,20 +65,36 @@ int main()
     Shader shader = initShaders();
     Camera camera{{0.0f, 0.0f, -5.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
     Renderer renderer{window, &camera, shader.program};
-    // VertexArray cube{Meshes::CubeIdx::vertices, Meshes::CubeIdx::indices};
-    VertexArray cube{Meshes::Cube::vertices};
-    Model modelCube{{&cube}, glm::mat4{1.f}, glm::mat4{1.f}, glm::mat4{1.f}};
     std::vector<Model> models;
-    models.push_back(modelCube);
+    //VertexArray cube{Meshes::CubeIdx::vertices, Meshes::CubeIdx::indices};
+    //VertexArray cube{Meshes::Cube::vertices};
+    //Model modelCube{{&cube}, glm::mat4{1.f}, glm::mat4{1.f}, glm::mat4{1.f}};
+    //models.push_back(modelCube);
+
+    WavefrontObject obj = parseWavefrontObject("/home/matti/Documents/fps_game/src/assets/models/tsbk07/bunnyplus.obj");
+    Mesh mesh = getMesh(obj);
+    VertexArray va{mesh.vertices, mesh.indices};
+    Model model{{&va}, glm::mat4{1.f}, glm::mat4{1.f}, glm::mat4{1.f}};
+    models.push_back(model);
 
     Mouse mouse(&camera);
     initCallbacks(window, &mouse, &camera);
 
+    double t0 = glfwGetTime();
+    int frameCount = 0;
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
         handleKeyInput(window, camera);
         //models[0].rotate(glm::vec3{1, 1, 1}, 0.001);
         renderer.render(models);
+        ++frameCount;
+        double t1 = glfwGetTime();
+        if (t1 - t0 >= 1)
+        {
+            std::cout << "FPS: " << frameCount << '\n';
+            frameCount = 0;
+            t0 = t1;
+        }
     }
 }

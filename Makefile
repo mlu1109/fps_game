@@ -6,7 +6,7 @@ OBJ_DIR = build
 # Files
 # -----
 OUT = a.out
-src = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/renderer/*.cpp)
+src = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/*/*.cpp)
 _temp = $(src:$(SRC_DIR)/%=$(OBJ_DIR)/%)
 obj = $(_temp:%.cpp=%.o)
 dep = $(obj:.o=.d)
@@ -23,7 +23,7 @@ all: directories program
 
 .PHONY: directories
 directories:
-	 mkdir -p build/renderer
+	 mkdir -p build/renderer build/obj_parser
 
 program: $(obj)
 	$(CC) -o $(OUT) $^ $(LDFLAGS) $(CFLAGS)

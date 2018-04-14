@@ -1,11 +1,12 @@
 #pragma once
 
+#include <array>
 #include <GL/glew.h>
 
 struct Vertex
 {
-    GLfloat position[3]; // x,y,z
-    GLfloat normal[3];   // x,y,z
-    GLbyte color[4];     // r,g,b,a [0,255]
-    GLfloat texCoord[2]; // u,v
+    std::array<GLfloat, 3> position; // x,y,z
+    std::array<GLfloat, 3> normal;   // x,y,z
+    std::array<GLbyte, 4> color;     // r,g,b,a [0,255]
+    std::array<GLfloat, 2> texCoord; // u,v
 };
