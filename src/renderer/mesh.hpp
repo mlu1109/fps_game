@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "parsers/obj.hpp"
+#include "loaders/obj.hpp"
 #include "vertex.hpp"
 
 struct Mesh

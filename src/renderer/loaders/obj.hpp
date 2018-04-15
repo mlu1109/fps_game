@@ -29,4 +29,4 @@ struct OBJ
     int cntFE = 0;
 };
 
-OBJ parseOBJ(const std::string &path);
+OBJ loadOBJ(const std::string &path);

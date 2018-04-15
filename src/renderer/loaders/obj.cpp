@@ -180,7 +180,7 @@ void parseF(const std::string &args, OBJ &result)
  * Parse file with path
  */
 
-OBJ parseOBJ(const std::string &path)
+OBJ loadOBJ(const std::string &path)
 {
     OBJ result;
 
