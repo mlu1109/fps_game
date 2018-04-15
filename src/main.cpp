@@ -6,10 +6,10 @@
 #include "renderer/model.hpp"
 #include "renderer/renderer.hpp"
 #include "renderer/camera.hpp"
-#include "renderer/meshes/cube.hpp"
+#include "renderer/mesh_cube.hpp"
 #include "renderer/vertexarray.hpp"
-#include "obj_parser/mesh.hpp"
-#include "obj_parser/wavefront_object.hpp"
+#include "renderer/mesh.hpp"
+#include "renderer/parsers/obj.hpp"
 #include "mouse.hpp"
 #include "callbacks.hpp"
 #include <memory>
@@ -71,8 +71,8 @@ int main()
     //Model modelCube{{&cube}, glm::mat4{1.f}, glm::mat4{1.f}, glm::mat4{1.f}};
     //models.push_back(modelCube);
 
-    WavefrontObject obj = parseWavefrontObject("/home/matti/Documents/fps_game/src/assets/models/tsbk07/bunnyplus.obj");
-    Mesh mesh = getMesh(obj);
+    OBJ obj = parseOBJ("/home/matti/Documents/fps_game/src/assets/models/tsbk07/bunnyplus.obj");
+    Mesh mesh = makeMesh(obj);
     VertexArray va{mesh.vertices, mesh.indices};
     Model model{{&va}, glm::mat4{1.f}, glm::mat4{1.f}, glm::mat4{1.f}};
     models.push_back(model);

@@ -4,6 +4,11 @@
 #include <string>
 #include <vector>
 
+/* Specification/Examples:
+ * https://en.wikipedia.org/wiki/Wavefront_.obj_file
+ * http://www.andrewnoske.com/wiki/OBJ_file_format
+ */
+
 struct FaceElement
 {
     int v = -1;
@@ -11,7 +16,7 @@ struct FaceElement
     int vn = -1;
 };
 
-struct WavefrontObject
+struct OBJ
 {
     std::vector<glm::vec3> v;
     std::vector<glm::vec2> vt;
@@ -24,4 +29,4 @@ struct WavefrontObject
     int cntFE = 0;
 };
 
-WavefrontObject parseWavefrontObject(const std::string &path);
+OBJ parseOBJ(const std::string &path);

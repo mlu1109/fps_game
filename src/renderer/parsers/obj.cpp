@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "wavefront_object.hpp"
+#include "obj.hpp"
 
 /* 
  * safeGetline copied from answer to question: https://stackoverflow.com/questions/6089231/getting-std-ifstream-to-handle-lf-cr-and-crlf
@@ -135,28 +135,28 @@ FaceElement parseTriplet(const std::string &args)
  * Parse lines 
  */
 
-void parseV(const std::string &args, WavefrontObject &result)
+void parseV(const std::string &args, OBJ &result)
 {
     result.cntV += 1;
     glm::vec3 v = parseVec3(args);
     result.v.push_back(v);
 }
 
-void parseVT(const std::string &args, WavefrontObject &result)
+void parseVT(const std::string &args, OBJ &result)
 {
     result.cntVT += 1;
     glm::vec2 vt = parseVec2(args);
     result.vt.push_back(vt);
 }
 
-void parseVN(const std::string &args, WavefrontObject &result)
+void parseVN(const std::string &args, OBJ &result)
 {
     result.cntVN += 1;
     glm::vec3 vn = parseVec3(args);
     result.vn.push_back(vn);
 }
 
-void parseF(const std::string &args, WavefrontObject &result)
+void parseF(const std::string &args, OBJ &result)
 {
     result.cntF += 1;
     std::vector<FaceElement> face;
@@ -180,9 +180,9 @@ void parseF(const std::string &args, WavefrontObject &result)
  * Parse file with path
  */
 
-WavefrontObject parseWavefrontObject(const std::string &path)
+OBJ parseOBJ(const std::string &path)
 {
-    WavefrontObject result;
+    OBJ result;
 
     std::string line;
     std::ifstream file(path);

@@ -19,7 +19,7 @@ bool operator<(const Vertex &lhs, const Vertex &rhs)
 
 /* Only supports three element faces at this time */
 
-Mesh getMesh(const WavefrontObject &obj)
+Mesh makeMesh(const OBJ &obj)
 {
     // Because .obj face elements and vertex/texcoord/normal triplets are not guaranteed to have a
     // one-to-one mapping new vertex/texcoord/normal triplets might need to be generated.
