@@ -13,7 +13,9 @@ class Renderer
     Camera *m_camera;
     glm::vec4 m_clearColor{0.2f, 0.2f, 0.5f, 1.0f};
     GLuint m_program; // Shader program (temp)
-public:
+
+  public:
     Renderer(GLFWwindow *window, Camera *camera, GLuint program);
+    
     void render(const std::vector<Model> &models);
 };

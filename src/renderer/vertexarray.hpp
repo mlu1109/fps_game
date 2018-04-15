@@ -6,7 +6,6 @@
 
 class VertexArray
 {
-private:
   GLuint m_id;
   GLuint m_vertexBufferId;
   GLuint m_indexBufferId;

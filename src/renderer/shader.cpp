@@ -17,6 +17,28 @@ std::string readFile(const std::string &path)
     return ss.str();
 }
 
+std::string getShaderInfoLog(GLuint shader)
+{
+    GLint maxLength = 0;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+    std::vector<GLchar> infoLog(maxLength);
+    glGetShaderInfoLog(shader, maxLength, &maxLength, infoLog.data());
+    return std::string(infoLog.data());
+}
+
+std::string getProgramInfoLog(GLuint program)
+{
+    GLint maxLength = 0;
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+    std::vector<GLchar> infoLog(maxLength);
+    glGetProgramInfoLog(program, maxLength, &maxLength, infoLog.data());
+    return std::string(infoLog.data());
+}
+
+/*
+ * https://www.khronos.org/opengl/wiki/Shader_Compilation#Examples_of_separate_programs
+ */
+
 GLuint loadShaders(const std::string &vertPath, const std::string &fragPath)
 {
     std::string vertexSource = readFile(vertPath);
@@ -24,7 +46,7 @@ GLuint loadShaders(const std::string &vertPath, const std::string &fragPath)
 
     /* Vertex Shader */
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    const GLchar *source = (const GLchar *)vertexSource.c_str();
+    const GLchar *source = reinterpret_cast<const GLchar *>(vertexSource.c_str());
     glShaderSource(vertexShader, 1, &source, 0);
     glCompileShader(vertexShader);
 
@@ -32,18 +54,12 @@ GLuint loadShaders(const std::string &vertPath, const std::string &fragPath)
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isCompiled);
     if (isCompiled == GL_FALSE)
     {
-        /* Compilation failed, print error and return */
-        GLint maxLength = 0;
-        glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
-        std::vector<GLchar> infoLog(maxLength); // The maxLength includes the NULL character
-        glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &infoLog[0]);
-        std::cout << &infoLog[0] << '\n';
-        // We don't need the shader anymore.
+        std::cout << getShaderInfoLog(vertexShader) << '\n';
         glDeleteShader(vertexShader);
         return 0;
     }
 
-    /* Vertex Shader */
+    /* Fragment Shader */
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     source = (const GLchar *)fragmentSource.c_str();
     glShaderSource(fragmentShader, 1, &source, 0);
@@ -53,18 +69,13 @@ GLuint loadShaders(const std::string &vertPath, const std::string &fragPath)
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isCompiled);
     if (isCompiled == GL_FALSE)
     {
-        /* Compilation failed, print error and return */
-        GLint maxLength = 0;
-        glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
-        std::vector<GLchar> infoLog(maxLength); // The maxLength includes the NULL character
-        glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, &infoLog[0]);
-        std::cout << &infoLog[0] << '\n';
-        // We don't need the shaders anymore.
+        std::cout << getShaderInfoLog(fragmentShader) << '\n';
         glDeleteShader(fragmentShader);
         glDeleteShader(vertexShader);
         return 0;
     }
 
+    /* Program */
     GLuint program = glCreateProgram();
     glAttachShader(program, vertexShader);
     glAttachShader(program, fragmentShader);
@@ -74,11 +85,7 @@ GLuint loadShaders(const std::string &vertPath, const std::string &fragPath)
     glGetProgramiv(program, GL_LINK_STATUS, (int *)&isLinked);
     if (isLinked == GL_FALSE)
     {
-        GLint maxLength = 0;
-        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
-        std::vector<GLchar> infoLog(maxLength); // The maxLength includes the NULL character
-        glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
-        std::cout << &infoLog[0] << '\n';
+        std::cout << getProgramInfoLog(program) << '\n';
         glDeleteProgram(program);
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
@@ -97,10 +104,9 @@ Shader initShaders()
     std::string vertPath = "src/shaders/color_normal.vert";
     std::string fragPath = "src/shaders/color_normal.frag";
     GLuint program = loadShaders(vertPath, fragPath);
-    Shader shader {
+    Shader shader{
         program,
         vertPath,
-        fragPath
-    };
+        fragPath};
     return shader;
 }
