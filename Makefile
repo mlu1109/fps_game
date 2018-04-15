@@ -22,12 +22,10 @@ CFLAGS = -Wall -Wextra -g -std=c++14
 all: program
 
 program: $(obj)
-	mkdir -p $(@D)
 	$(CC) -o $(OUT) $^ $(LDFLAGS) $(CFLAGS)
 include $(dep) 
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ_DIR)/%.d: $(SRC_DIR)/%.cpp
@@ -44,7 +42,7 @@ cleandep:
 
 .PHONY: clean
 clean: cleanobj cleandep
-	rm -f $(OUT)
+	rm -rf build
 
 .PHONY: run
 run: all
