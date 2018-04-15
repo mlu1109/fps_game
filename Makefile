@@ -6,7 +6,7 @@ OBJ_DIR = build
 # Files
 # -----
 OUT = a.out
-src = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/*/*.cpp)
+src = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/*/*.cpp) $(wildcard $(SRC_DIR)/*/*/*.cpp)
 _temp = $(src:$(SRC_DIR)/%=$(OBJ_DIR)/%)
 obj = $(_temp:%.cpp=%.o)
 dep = $(obj:.o=.d)
@@ -19,20 +19,19 @@ CFLAGS = -Wall -Wextra -g -std=c++14
 
 # Rules
 # -----
-all: directories program
-
-.PHONY: directories
-directories:
-	 mkdir -p build/renderer build/obj_parser
+all: program
 
 program: $(obj)
+	mkdir -p $(@D)
 	$(CC) -o $(OUT) $^ $(LDFLAGS) $(CFLAGS)
 include $(dep) 
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ_DIR)/%.d: $(SRC_DIR)/%.cpp
+	mkdir -p $(@D)
 	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
 .PHONY: cleanobj
