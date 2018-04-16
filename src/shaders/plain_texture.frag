@@ -1,10 +1,11 @@
-#version 150
+#version 330
+#extension GL_ARB_explicit_uniform_location: enable
 in vec2 texCoord;
 out vec4 outColor;
 
-uniform texture2D texUnit;
+layout(location = 4) uniform sampler2D texUnit;
 
 void main(void)
 {
-    outColor = texture(texUnit, texCoord)
+    outColor = texture(texUnit, texCoord);
 }

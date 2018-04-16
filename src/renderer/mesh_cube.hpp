@@ -10,21 +10,21 @@
 namespace Meshes
 {
 
-Mesh getCubeIdx() // With indices
+std::pair<std::vector<Vertex>, std::vector<GLuint>> getCubeIdx() // With indices
 {
     const GLfloat n = 0.57735026919;
     const std::vector<Vertex> vertices{
         // Skipping colors and texCoord for now
         // front
-        {{-0.5, -0.5, +0.5}, {-n, -n, +n}, {}, {}}, // 0
-        {{+0.5, -0.5, +0.5}, {+n, -n, +n}, {}, {}}, // 1
-        {{+0.5, +0.5, +0.5}, {+n, +n, +n}, {}, {}}, // 2
-        {{-0.5, +0.5, +0.5}, {-n, +n, +n}, {}, {}}, // 3
+        {{-0.5, -0.5, +0.5}, {-n, -n, +n}, {}, {0.0, 0.0}}, // 0
+        {{+0.5, -0.5, +0.5}, {+n, -n, +n}, {}, {1.0, 0.0}}, // 1
+        {{+0.5, +0.5, +0.5}, {+n, +n, +n}, {}, {1.0, 1.0}}, // 2
+        {{-0.5, +0.5, +0.5}, {-n, +n, +n}, {}, {0.0, 1.0}}, // 3
         // back
-        {{-0.5, -0.5, -0.5}, {-n, -n, -n}, {}, {}}, // 4
-        {{+0.5, -0.5, -0.5}, {+n, -n, -n}, {}, {}}, // 5
-        {{+0.5, +0.5, -0.5}, {+n, +n, -n}, {}, {}}, // 6
-        {{-0.5, +0.5, -0.5}, {-n, +n, -n}, {}, {}}, // 7
+        {{-0.5, -0.5, -0.5}, {-n, -n, -n}, {}, {0.0, 0.0}}, // 4
+        {{+0.5, -0.5, -0.5}, {+n, -n, -n}, {}, {1.0, 0.0}}, // 5
+        {{+0.5, +0.5, -0.5}, {+n, +n, -n}, {}, {1.0, 1.0}}, // 6
+        {{-0.5, +0.5, -0.5}, {-n, +n, -n}, {}, {0.0, 1.0}}, // 7
     };
     const std::vector<GLuint> indices{
         // front
@@ -49,7 +49,7 @@ Mesh getCubeIdx() // With indices
     return {vertices, indices};
 }
 
-Mesh getCube() // Without indices
+std::pair<std::vector<Vertex>, std::vector<GLuint>> getCube() // Without indices
 {
     const GLfloat n = 0.57735026919;
     const std::vector<Vertex> vertices{

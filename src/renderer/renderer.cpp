@@ -13,15 +13,15 @@ void Renderer::render(const std::vector<Model> &models)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(m_program); // TODO: Temporary, fix this.
-    
+
     glm::mat4 worldView = m_camera->getWorldToView();
     glUniformMatrix4fv(UNIFORM_WORLD_TO_VIEW, 1, GL_FALSE, &worldView[0][0]);
     glm::mat4 viewScreen = m_camera->getViewToScreen();
     glUniformMatrix4fv(UNIFORM_VIEW_TO_SCREEN, 1, GL_FALSE, &viewScreen[0][0]);
+    //glActiveTexture(GL_TEXTURE0); // GL_TEXTURE0 by default
+    glUniform1i(UNIFORM_TEXTURE_UNIT, 0);
     for (const auto &model : models)
     {
-        glm::mat4 modelWorld = model.getModelToWorld();
-        glUniformMatrix4fv(UNIFORM_MODEL_TO_WORLD, 1, GL_FALSE, &modelWorld[0][0]);
         model.draw();
     }
 

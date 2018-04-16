@@ -4,7 +4,8 @@
 #include <string>
 #include <vector>
 
-/* Specification/Examples:
+/* 
+ * Specification/Examples:
  * https://en.wikipedia.org/wiki/Wavefront_.obj_file
  * http://www.andrewnoske.com/wiki/OBJ_file_format
  */

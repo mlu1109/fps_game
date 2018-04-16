@@ -2,17 +2,19 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <unordered_map>
-#include "renderer/shader.hpp"
-#include "renderer/model.hpp"
-#include "renderer/renderer.hpp"
+#include "callbacks.hpp"
+#include "loaders/obj.hpp"
+#include "loaders/tga.hpp"
+#include "mouse.hpp"
 #include "renderer/camera.hpp"
 #include "renderer/mesh_cube.hpp"
-#include "renderer/vertexarray.hpp"
 #include "renderer/mesh.hpp"
-#include "renderer/loaders/obj.hpp"
-#include "mouse.hpp"
-#include "callbacks.hpp"
-#include <memory>
+#include "renderer/model.hpp"
+#include "renderer/renderer.hpp"
+#include "renderer/shader.hpp"
+#include "renderer/texture.hpp"
+#include "renderer/vertexarray.hpp"
+#include "utility.hpp"
 
 GLFWwindow *initWindow()
 {
@@ -66,15 +68,18 @@ int main()
     Camera camera{{0.0f, 0.0f, -5.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
     Renderer renderer{window, &camera, shader.program};
     std::vector<Model> models;
-    //VertexArray cube{Meshes::CubeIdx::vertices, Meshes::CubeIdx::indices};
-    //VertexArray cube{Meshes::Cube::vertices};
-    //Model modelCube{{&cube}, glm::mat4{1.f}, glm::mat4{1.f}, glm::mat4{1.f}};
-    //models.push_back(modelCube);
 
-    OBJ obj = loadOBJ("/home/matti/Documents/fps_game/src/assets/models/tsbk07/bunnyplus.obj");
-    Mesh mesh = makeMesh(obj);
-    VertexArray va{mesh.vertices, mesh.indices};
-    Model model{{&va}, glm::mat4{1.f}, glm::mat4{1.f}, glm::mat4{1.f}};
+    OBJ obj = loadOBJ("/home/matti/Documents/fps_game/src/assets/models/tsbk07/teapot.obj");
+    auto pair = transformOBJ(obj);
+    //auto pair = Meshes::getCubeIdx();
+    VertexArray va{pair.first, pair.second};
+    
+    TGA tga = loadTGA("/home/matti/Documents/fps_game/src/assets/textures/tsbk07/rutor.tga");
+    Texture tex{tga.imageData, tga.bitsPerPixel == 32 ? GL_RGBA : GL_RGB, tga.width, tga.height};
+    
+    Model model{glm::mat4{1.0f}, glm::mat4{1.0f}, glm::mat4{1.0f}};
+    model.addMesh(Mesh{&va, &tex});
+
     models.push_back(model);
 
     Mouse mouse(&camera);

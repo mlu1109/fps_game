@@ -11,7 +11,6 @@ class VertexArray
   GLuint m_indexBufferId;
   GLsizei m_vertexCount;
   GLsizei m_indexCount;
-
 public:
   VertexArray(const std::vector<Vertex> &vertices);
   VertexArray(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices);

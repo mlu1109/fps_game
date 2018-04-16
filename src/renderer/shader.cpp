@@ -101,8 +101,8 @@ GLuint loadShaders(const std::string &vertPath, const std::string &fragPath)
 
 Shader initShaders()
 {
-    std::string vertPath = "src/shaders/color_normal.vert";
-    std::string fragPath = "src/shaders/color_normal.frag";
+    std::string vertPath = "src/shaders/plain_texture.vert";
+    std::string fragPath = "src/shaders/plain_texture.frag";
     GLuint program = loadShaders(vertPath, fragPath);
     Shader shader{
         program,
