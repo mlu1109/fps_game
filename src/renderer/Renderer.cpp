@@ -11,10 +11,6 @@ Renderer::Renderer(GLFWwindow *window, Camera *camera)
 void Renderer::pre()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glm::mat4 worldView = m_camera->getWorldView();
-    glUniformMatrix4fv(UNIFORM_WORLD_TO_VIEW, 1, GL_FALSE, &worldView[0][0]);
-    glm::mat4 viewScreen = m_camera->getViewScreen();
-    glUniformMatrix4fv(UNIFORM_VIEW_TO_SCREEN, 1, GL_FALSE, &viewScreen[0][0]);
 }
 
 void Renderer::render(const Drawable &object)
@@ -25,6 +21,10 @@ void Renderer::render(const Drawable &object)
     const auto& modelWorld = object.getModelWorld();
 
     shader->bind();
+    glm::mat4 worldView = m_camera->getWorldView();
+    glUniformMatrix4fv(UNIFORM_WORLD_TO_VIEW, 1, GL_FALSE, &worldView[0][0]);
+    glm::mat4 viewScreen = m_camera->getViewScreen();
+    glUniformMatrix4fv(UNIFORM_VIEW_TO_SCREEN, 1, GL_FALSE, &viewScreen[0][0]);
     va->bind();
     if (tex)
         tex->bind();

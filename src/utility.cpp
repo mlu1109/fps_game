@@ -81,3 +81,13 @@ std::shared_ptr<Texture> newTextureFromTGA(const std::string &tgaPath)
     TGA tga = loadTGA(tgaPath);
     return std::make_shared<Texture>(tga.imageData, tga.bitsPerPixel == 32 ? GL_RGBA : GL_RGB, tga.width, tga.height);
 }
+
+/*
+ * newHeightMapFromTGA
+ */
+
+HeightMap newHeightMapFromTGA(const std::string &tgaPath, const std::shared_ptr<Shader> &shader)
+{
+    TGA tga = loadTGA(tgaPath);
+    return HeightMap{tga.width, tga.height, tga.imageData, tga.bytesPerPixel, shader};
+}

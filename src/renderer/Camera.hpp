@@ -21,7 +21,7 @@ public:
   Camera(const glm::vec3 &position, const glm::vec3 &look, const glm::vec3 &up);
 
   const glm::mat4 &getViewScreen() const { return m_viewScreen; }
-  glm::mat4 getWorldView() const { return glm::lookAt(m_position, m_look, m_up);; };
+  glm::mat4 getWorldView() const { return glm::lookAt(m_position, m_look, m_up); }
 
   void yaw(float rad);
   void pitch(float rad);

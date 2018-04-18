@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <memory>
 #include <vector>
+#include "Heightmap.hpp"
 #include "loaders/OBJ.hpp"
 #include "loaders/TGA.hpp"
 #include "renderer/Texture.hpp"
@@ -14,3 +15,4 @@
 
 std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const std::string &objPath);
 std::shared_ptr<Texture> newTextureFromTGA(const std::string &tgaPath);
+HeightMap newHeightMapFromTGA(const std::string &tgaPath, const std::shared_ptr<Shader>& shader);

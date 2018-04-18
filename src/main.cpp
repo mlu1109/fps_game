@@ -45,7 +45,7 @@ GLFWwindow *initWindow()
 
 void handleKeyInput(GLFWwindow *window, Camera &camera)
 {
-    const float speed = 0.02;
+    const float speed = 0.2;
     glm::vec3 translate{0};
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.moveZ(speed);
@@ -66,11 +66,14 @@ int main()
     Mouse mouse(&camera);
     initCallbacks(window, &mouse, &camera);
     
-    auto shader = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/plain_texture.vert", "/home/matti/Documents/fps_game/src/shaders/plain_texture.frag");
+    //auto shader = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/plain_texture.vert", "/home/matti/Documents/fps_game/src/shaders/plain_texture.frag");
+    auto shader = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/color_normal.vert", "/home/matti/Documents/fps_game/src/shaders/color_normal.frag");
     auto tex = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/tsbk07/rutor.tga");
     //auto va = newVertexArrayFromOBJ("/home/matti/Documents/fps_game/src/assets/models/tsbk07/bunnyplus.obj");
     auto va = newCubeIdx();
     Model model{Mesh{shader, tex, va}};
+
+    auto heightMap = newHeightMapFromTGA("/home/matti/Documents/fps_game/src/assets/heightmaps/fft-terrain.tga", shader);
 
     double t0 = glfwGetTime();
     int frameCount = 0;
@@ -81,6 +84,7 @@ int main()
         model.rotate({0.01, 0.01, 0.01});
         model.updateModelWorld();
         renderer.pre();
+        renderer.render(heightMap);
         renderer.render(model);
         renderer.post();
         ++frameCount;
