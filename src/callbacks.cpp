@@ -15,7 +15,7 @@ void errorCallback(int, const char *description)
 void windowResizeCallback(GLFWwindow *, int width, int height)
 {
     glViewport(0, 0, width, height);
-    g_camera->updateAspect(width, height);
+    g_camera->updateAspectRatio(width, height);
 }
 
 /* Cursor/Mouse */

@@ -1,14 +1,16 @@
 #pragma once
 
 #include <GL/glew.h>
+#include <memory>
 #include <vector>
-#include "loaders/obj.hpp"
-#include "loaders/tga.hpp"
-#include "renderer/vertex.hpp"
-#include "renderer/texture.hpp"
+#include "loaders/OBJ.hpp"
+#include "loaders/TGA.hpp"
+#include "renderer/Texture.hpp"
+#include "renderer/VertexArray.hpp"
 
 /*
  * A bunch of helper functions that have not found a better home
  */
 
-std::pair<std::vector<Vertex>, std::vector<GLuint>> transformOBJ(const OBJ &obj);
+std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const std::string &objPath);
+std::shared_ptr<Texture> newTextureFromTGA(const std::string &tgaPath);

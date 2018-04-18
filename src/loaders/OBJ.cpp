@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "obj.hpp"
+#include "OBJ.hpp"
 
 /* 
  * safeGetline copied from answer to question: https://stackoverflow.com/questions/6089231/getting-std-ifstream-to-handle-lf-cr-and-crlf

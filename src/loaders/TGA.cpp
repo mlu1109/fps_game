@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include "tga.hpp"
+#include "TGA.hpp"
 
 /* NOTE: Does not handle all types of TGA */
 

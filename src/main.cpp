@@ -2,18 +2,14 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <unordered_map>
+#include "Model.hpp"
 #include "callbacks.hpp"
-#include "loaders/obj.hpp"
-#include "loaders/tga.hpp"
-#include "mouse.hpp"
-#include "renderer/camera.hpp"
-#include "renderer/mesh_cube.hpp"
-#include "renderer/mesh.hpp"
-#include "renderer/model.hpp"
-#include "renderer/renderer.hpp"
-#include "renderer/shader.hpp"
-#include "renderer/texture.hpp"
-#include "renderer/vertexarray.hpp"
+#include "loaders/OBJ.hpp"
+#include "loaders/TGA.hpp"
+#include "renderer/Camera.hpp"
+#include "renderer/Renderer.hpp"
+#include "renderer/Shader.hpp"
+#include "renderer/VertexArrayCube.hpp"
 #include "utility.hpp"
 
 GLFWwindow *initWindow()
@@ -64,26 +60,17 @@ void handleKeyInput(GLFWwindow *window, Camera &camera)
 int main()
 {
     GLFWwindow *window = initWindow();
-    Shader shader = initShaders();
     Camera camera{{0.0f, 0.0f, -5.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
-    Renderer renderer{window, &camera, shader.program};
-    std::vector<Model> models;
-
-    OBJ obj = loadOBJ("/home/matti/Documents/fps_game/src/assets/models/tsbk07/teapot.obj");
-    auto pair = transformOBJ(obj);
-    //auto pair = Meshes::getCubeIdx();
-    VertexArray va{pair.first, pair.second};
-    
-    TGA tga = loadTGA("/home/matti/Documents/fps_game/src/assets/textures/tsbk07/rutor.tga");
-    Texture tex{tga.imageData, tga.bitsPerPixel == 32 ? GL_RGBA : GL_RGB, tga.width, tga.height};
-    
-    Model model{glm::mat4{1.0f}, glm::mat4{1.0f}, glm::mat4{1.0f}};
-    model.addMesh(Mesh{&va, &tex});
-
-    models.push_back(model);
-
+    Renderer renderer{window, &camera};
+    // Input
     Mouse mouse(&camera);
     initCallbacks(window, &mouse, &camera);
+    
+    auto shader = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/plain_texture.vert", "/home/matti/Documents/fps_game/src/shaders/plain_texture.frag");
+    auto tex = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/tsbk07/rutor.tga");
+    //auto va = newVertexArrayFromOBJ("/home/matti/Documents/fps_game/src/assets/models/tsbk07/bunnyplus.obj");
+    auto va = newCubeIdx();
+    Model model{Mesh{shader, tex, va}};
 
     double t0 = glfwGetTime();
     int frameCount = 0;
@@ -91,8 +78,11 @@ int main()
     {
         glfwPollEvents();
         handleKeyInput(window, camera);
-        //models[0].rotate(glm::vec3{1, 1, 1}, 0.001);
-        renderer.render(models);
+        model.rotate({0.01, 0.01, 0.01});
+        model.updateModelWorld();
+        renderer.pre();
+        renderer.render(model);
+        renderer.post();
         ++frameCount;
         double t1 = glfwGetTime();
         if (t1 - t0 >= 1)

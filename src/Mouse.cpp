@@ -1,5 +1,5 @@
-#include "mouse.hpp"
 #include <GLFW/glfw3.h>
+#include "Mouse.hpp"
 
 Mouse::Mouse(Camera *camera) : m_camera(camera)
 {

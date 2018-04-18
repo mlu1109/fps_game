@@ -1,6 +1,6 @@
 #include <cstddef>       // offsetof
+#include "VertexArray.hpp"
 #include "constants.hpp" // ATTRIB_...
-#include "vertexarray.hpp"
 
 VertexArray::VertexArray(const std::vector<Vertex> &vertices)
 {

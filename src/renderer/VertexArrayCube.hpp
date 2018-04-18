@@ -1,16 +1,13 @@
 #pragma once
 
 #include <GL/glew.h>
+#include <memory>
 #include <vector>
-#include "mesh.hpp"
-#include "vertex.hpp"
+#include "VertexArray.hpp"
 
 /* Primarily used for testing */
 
-namespace Meshes
-{
-
-std::pair<std::vector<Vertex>, std::vector<GLuint>> getCubeIdx() // With indices
+std::shared_ptr<VertexArray> newCubeIdx() // With indices
 {
     const GLfloat n = 0.57735026919;
     const std::vector<Vertex> vertices{
@@ -46,10 +43,10 @@ std::pair<std::vector<Vertex>, std::vector<GLuint>> getCubeIdx() // With indices
         3, 2, 6,
         6, 7, 3};
 
-    return {vertices, indices};
+    return std::make_shared<VertexArray>(vertices, indices);
 }
 
-std::pair<std::vector<Vertex>, std::vector<GLuint>> getCube() // Without indices
+std::shared_ptr<VertexArray> newCube() // Without indices
 {
     const GLfloat n = 0.57735026919;
     const std::vector<Vertex> vertices{
@@ -97,7 +94,5 @@ std::pair<std::vector<Vertex>, std::vector<GLuint>> getCube() // Without indices
         {{-0.5, +0.5, +0.5}, {-n, +n, +n}, {}, {}}, // 3
     };
     
-    return {vertices, std::vector<GLuint>{}};
+    return std::make_shared<VertexArray>(vertices, std::vector<GLuint>{});
 }
-
-} // namespace Meshes

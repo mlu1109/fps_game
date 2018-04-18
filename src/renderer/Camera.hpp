@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
 class Camera
@@ -14,17 +15,13 @@ class Camera
   float m_near = 0.1f;
   float m_far = 100.0f;
 
-  glm::mat4 m_viewToScreen;
+  glm::mat4 m_viewScreen;
 
 public:
   Camera(const glm::vec3 &position, const glm::vec3 &look, const glm::vec3 &up);
 
-  void position(const glm::vec3 &position);
-  void look(const glm::vec3 &look);
-  void up(const glm::vec3 &up);
-
-  const glm::mat4 &getViewToScreen() const { return m_viewToScreen; }
-  glm::mat4 getWorldToView() const;
+  const glm::mat4 &getViewScreen() const { return m_viewScreen; }
+  glm::mat4 getWorldView() const { return glm::lookAt(m_position, m_look, m_up);; };
 
   void yaw(float rad);
   void pitch(float rad);
@@ -32,5 +29,5 @@ public:
   void moveX(float amount);
   void moveZ(float amount);
 
-  void updateAspect(int windowWidth, int windowHeight);
+  void updateAspectRatio(int windowWidth, int windowHeight);
 };

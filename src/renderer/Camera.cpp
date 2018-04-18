@@ -1,25 +1,10 @@
 #include <glm/gtc/matrix_transform.hpp>
-#include "camera.hpp"
+#include "Camera.hpp"
 
 Camera::Camera(const glm::vec3 &position, const glm::vec3 &look, const glm::vec3 &up)
     : m_position(position), m_look(look), m_up(up)
 {
-    m_viewToScreen = glm::perspective(m_fovy, m_aspect, m_near, m_far);
-}
-
-void Camera::position(const glm::vec3 &position)
-{
-    m_position = position;
-}
-
-void Camera::look(const glm::vec3 &look)
-{
-    m_look = look;
-}
-
-void Camera::up(const glm::vec3 &up)
-{
-    m_up = up;
+    m_viewScreen = glm::perspective(m_fovy, m_aspect, m_near, m_far);
 }
 
 void Camera::yaw(float rad)
@@ -63,13 +48,8 @@ void Camera::moveZ(float amount)
     m_position += moveZ;
 }
 
-glm::mat4 Camera::getWorldToView() const
-{
-    return glm::lookAt(m_position, m_look, m_up);
-}
-
-void Camera::updateAspect(int width, int height)
+void Camera::updateAspectRatio(int width, int height)
 {
     m_aspect = static_cast<float>(width) / static_cast<float>(height);
-    m_viewToScreen = glm::perspective(m_fovy, m_aspect, m_near, m_far);
+    m_viewScreen = glm::perspective(m_fovy, m_aspect, m_near, m_far);
 }

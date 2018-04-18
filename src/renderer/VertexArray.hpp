@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 #include <vector>
-#include "vertex.hpp"
+#include "Vertex.hpp"
 
 class VertexArray
 {

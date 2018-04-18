@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include "shader.hpp"
+#include "Shader.hpp"
 
 std::string readFile(const std::string &path)
 {
@@ -99,14 +99,7 @@ GLuint loadShaders(const std::string &vertPath, const std::string &fragPath)
     return program;
 }
 
-Shader initShaders()
+Shader::Shader(const std::string &vertPath, const std::string &fragPath)
 {
-    std::string vertPath = "src/shaders/plain_texture.vert";
-    std::string fragPath = "src/shaders/plain_texture.frag";
-    GLuint program = loadShaders(vertPath, fragPath);
-    Shader shader{
-        program,
-        vertPath,
-        fragPath};
-    return shader;
+    m_program = loadShaders(vertPath, fragPath);
 }

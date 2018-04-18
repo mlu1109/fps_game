@@ -2,8 +2,6 @@
 
 #include <GL/glew.h>
 #include <array>
-#include <utility>
-#include <vector>
 
 struct Vertex
 {

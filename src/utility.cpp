@@ -2,8 +2,9 @@
 #include "utility.hpp"
 
 /*
- * transformOBJ
+ * newVertexArrayFromOBJ
  */
+
 
 bool operator<(const Vertex &lhs, const Vertex &rhs)
 {
@@ -19,10 +20,12 @@ bool operator<(const Vertex &lhs, const Vertex &rhs)
     return false; // equal
 }
 
-std::pair<std::vector<Vertex>, std::vector<GLuint>> transformOBJ(const OBJ &obj)
+std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const std::string &objPath)
 {
     // Because .obj face elements and vertex/texcoord/normal triplets are not guaranteed to have a
     // one-to-one mapping new vertex/texcoord/normal triplets might need to be generated.
+
+    OBJ obj = loadOBJ(objPath);
 
     std::map<Vertex, GLuint> vertexToIndex;
     std::vector<Vertex> vertices;
@@ -66,5 +69,15 @@ std::pair<std::vector<Vertex>, std::vector<GLuint>> transformOBJ(const OBJ &obj)
         }
     }
 
-    return {vertices, indices};
+    return std::make_shared<VertexArray>(vertices, indices);
+}
+
+/*
+ * newTextureFromTGA
+ */
+
+std::shared_ptr<Texture> newTextureFromTGA(const std::string &tgaPath)
+{
+    TGA tga = loadTGA(tgaPath);
+    return std::make_shared<Texture>(tga.imageData, tga.bitsPerPixel == 32 ? GL_RGBA : GL_RGB, tga.width, tga.height);
 }

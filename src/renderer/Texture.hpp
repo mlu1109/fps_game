@@ -20,7 +20,7 @@ class Texture
     Texture(const std::vector<GLubyte> &imageData, GLint internalFormat, GLsizei width, GLsizei height);
     Texture(const Texture &) = delete;
     Texture(Texture &&) = delete;
-    ~Texture();
+    ~Texture() { glDeleteTextures(1, &m_id); }
 
-    void bind() const { glBindTexture(GL_TEXTURE_2D, m_id); };
+    void bind() const { glBindTexture(GL_TEXTURE_2D, m_id); }
 };
