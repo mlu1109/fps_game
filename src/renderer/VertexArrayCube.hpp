@@ -11,7 +11,6 @@ std::shared_ptr<VertexArray> newCubeIdx() // With indices
 {
     const GLfloat n = 0.57735026919;
     const std::vector<Vertex> vertices{
-        // Skipping colors and texCoord for now
         // front
         {{-0.5, -0.5, +0.5}, {-n, -n, +n}, {}, {0.0, 0.0}}, // 0
         {{+0.5, -0.5, +0.5}, {+n, -n, +n}, {}, {1.0, 0.0}}, // 1
@@ -23,7 +22,7 @@ std::shared_ptr<VertexArray> newCubeIdx() // With indices
         {{+0.5, +0.5, -0.5}, {+n, +n, -n}, {}, {1.0, 1.0}}, // 6
         {{-0.5, +0.5, -0.5}, {-n, +n, -n}, {}, {0.0, 1.0}}, // 7
     };
-    const std::vector<GLuint> indices{
+    const std::vector<GLuint> indices{ // texCoords do not match with every face
         // front
         0, 1, 2,
         2, 3, 0,

@@ -6,28 +6,37 @@
 
 class Camera
 {
-  glm::vec3 m_position;
-  glm::vec3 m_look;
-  glm::vec3 m_up;
+    glm::vec3 m_p; // Position
+    glm::vec3 m_r; // Right                 (Unit)
+    glm::vec3 m_u; // Up                    (Unit)
+    glm::vec3 m_d; // Direction/Forward     (Unit)
 
-  float m_fovy = M_PI / 4.0f;
-  float m_aspect = 4.0f / 3.0f;
-  float m_near = 0.1f;
-  float m_far = 100.0f;
+    glm::mat4 m_worldView;
+    glm::mat4 m_viewScreen;
 
-  glm::mat4 m_viewScreen;
+    float m_angleYaw = 0;
+    float m_anglePitch = 0;
 
-public:
-  Camera(const glm::vec3 &position, const glm::vec3 &look, const glm::vec3 &up);
+    float m_fovy = M_PI / 4.0f;
+    float m_aspect = 4.0f / 3.0f;
+    float m_near = 0.1f;
+    float m_far = 100.0f;
 
-  const glm::mat4 &getViewScreen() const { return m_viewScreen; }
-  glm::mat4 getWorldView() const { return glm::lookAt(m_position, m_look, m_up); }
+    void updateDirection();
+    void updatePosition();
+    void updateWorldView() { m_worldView = glm::lookAt(m_p, m_p + m_d, m_u); };
+    void updateViewScreen() { m_viewScreen = glm::perspective(m_fovy, m_aspect, m_near, m_far); }
 
-  void yaw(float rad);
-  void pitch(float rad);
-  void roll(float rad);
-  void moveX(float amount);
-  void moveZ(float amount);
+  public:
+    Camera(const glm::vec3 &position, const glm::vec3 &look);
 
-  void updateAspectRatio(int windowWidth, int windowHeight);
+    const glm::mat4 &getViewScreen() const { return m_viewScreen; }
+    const glm::mat4 &getWorldView() const { return m_worldView; }
+
+    void yaw(float rad);
+    void pitch(float rad);
+    void moveD(float amount);
+    void moveR(float amount);
+
+    void updateAspectRatio(int windowWidth, int windowHeight);
 };

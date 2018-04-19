@@ -48,30 +48,50 @@ void handleKeyInput(GLFWwindow *window, Camera &camera)
     const float speed = 0.2;
     glm::vec3 translate{0};
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.moveZ(speed);
+        camera.moveD(-speed);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.moveX(-speed);
+        camera.moveR(-speed);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.moveZ(-speed);
+        camera.moveD(speed);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.moveX(speed);
+        camera.moveR(speed);
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        camera.pitch(speed * 0.1);
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        camera.yaw(-speed * 0.1);
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        camera.pitch(-speed * 0.1);
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        camera.yaw(speed * 0.1);
 }
 
 int main()
 {
     GLFWwindow *window = initWindow();
-    Camera camera{{0.0f, 0.0f, -5.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
+    //Camera camera{{-30.0f, -20.0f, -50.0f}, {20.0f, 0.0f, 20.0f}};
+    //Camera camera{{30.0f, -20.0f, -50.0f}, {20.0f, 0.0f, 20.0f}};
+    Camera camera{{-30.0f, -20.0f, 50.0f}, {20.0f, 0.0f, 20.0f}};
+    //Camera camera{{-30.0f, -20.0f, -50.0f}, {20.0f, 0.0f, 20.0f}};
     Renderer renderer{window, &camera};
     // Input
     Mouse mouse(&camera);
     initCallbacks(window, &mouse, &camera);
-    
+
     //auto shader = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/plain_texture.vert", "/home/matti/Documents/fps_game/src/shaders/plain_texture.frag");
     auto shader = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/color_normal.vert", "/home/matti/Documents/fps_game/src/shaders/color_normal.frag");
     auto tex = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/tsbk07/rutor.tga");
     //auto va = newVertexArrayFromOBJ("/home/matti/Documents/fps_game/src/assets/models/tsbk07/bunnyplus.obj");
     auto va = newCubeIdx();
-    Model model{Mesh{shader, tex, va}};
+
+    std::array<Model, 6> cube = {
+        Model{Mesh{shader, tex, va}, Transform{{5, 0, 5}}},
+        Model{Mesh{shader, tex, va}, Transform{{-5, 0, -5}}},
+        Model{Mesh{shader, tex, va}, Transform{{-5, 0, 5}}},
+        Model{Mesh{shader, tex, va}, Transform{{5, 0, -5}}},
+        Model{Mesh{shader, tex, va}, Transform{{0, 0, 0}}},
+        Model{Mesh{shader, tex, va}, Transform{{20, 0, 20}}},
+    };
 
     auto heightMap = newHeightMapFromTGA("/home/matti/Documents/fps_game/src/assets/heightmaps/fft-terrain.tga", shader);
 
@@ -81,11 +101,15 @@ int main()
     {
         glfwPollEvents();
         handleKeyInput(window, camera);
-        model.rotate({0.01, 0.01, 0.01});
-        model.updateModelWorld();
+        for (auto &c : cube)
+        {
+            c.rotate({0.01, 0.01, 0.01});
+            c.updateModelWorld();
+        }
         renderer.pre();
         renderer.render(heightMap);
-        renderer.render(model);
+        for (auto &c : cube)
+            renderer.render(c);
         renderer.post();
         ++frameCount;
         double t1 = glfwGetTime();

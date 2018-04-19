@@ -1,6 +1,11 @@
 #pragma once
 
 #include <GL/glew.h>
+#include <cmath>
+
+// M_HALF_PI
+
+const double M_HALF_PI = M_PI / 2.f;
 
 // Shader Attribute Locations
 const GLuint ATTRIB_POSITION = 0;
