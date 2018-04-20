@@ -45,7 +45,7 @@ GLFWwindow *initWindow()
 
 void handleKeyInput(GLFWwindow *window, Camera &camera)
 {
-    const float speed = 0.2;
+    const float speed = 0.4;
     glm::vec3 translate{0};
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.moveD(-speed);
@@ -78,22 +78,26 @@ int main()
     Mouse mouse(&camera);
     initCallbacks(window, &mouse, &camera);
 
-    //auto shader = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/plain_texture.vert", "/home/matti/Documents/fps_game/src/shaders/plain_texture.frag");
-    auto shader = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/color_normal.vert", "/home/matti/Documents/fps_game/src/shaders/color_normal.frag");
-    auto tex = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/tsbk07/rutor.tga");
+    auto shaderTerrain = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/terrain.vert", "/home/matti/Documents/fps_game/src/shaders/terrain.frag");
+    auto shaderCube = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/plain_texture.vert", "/home/matti/Documents/fps_game/src/shaders/plain_texture.frag");
+    //auto shader = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/color_normal.vert", "/home/matti/Documents/fps_game/src/shaders/color_normal.frag");
+    auto texCube = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/tsbk07/rutor.tga");
+    texCube->setRepeat();
+    auto texTerrain = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/terrain50.tga");
+    texTerrain->setRepeat();
     //auto va = newVertexArrayFromOBJ("/home/matti/Documents/fps_game/src/assets/models/tsbk07/bunnyplus.obj");
     auto va = newCubeIdx();
 
     std::array<Model, 6> cube = {
-        Model{Mesh{shader, tex, va}, Transform{{5, 0, 5}}},
-        Model{Mesh{shader, tex, va}, Transform{{-5, 0, -5}}},
-        Model{Mesh{shader, tex, va}, Transform{{-5, 0, 5}}},
-        Model{Mesh{shader, tex, va}, Transform{{5, 0, -5}}},
-        Model{Mesh{shader, tex, va}, Transform{{0, 0, 0}}},
-        Model{Mesh{shader, tex, va}, Transform{{20, 0, 20}}},
+        Model{Mesh{shaderCube, texCube, va}, Transform{{5, 0, 5}}},
+        Model{Mesh{shaderCube, texCube, va}, Transform{{-5, 0, -5}}},
+        Model{Mesh{shaderCube, texCube, va}, Transform{{-5, 0, 5}}},
+        Model{Mesh{shaderCube, texCube, va}, Transform{{5, 0, -5}}},
+        Model{Mesh{shaderCube, texCube, va}, Transform{{0, 0, 0}}},
+        Model{Mesh{shaderCube, texCube, va}, Transform{{20, 0, 20}, {0, 0, 0}, {3, 3, 3}}},
     };
 
-    auto heightMap = newHeightMapFromTGA("/home/matti/Documents/fps_game/src/assets/heightmaps/fft-terrain.tga", shader);
+    auto heightMap = newHeightMapFromTGA("/home/matti/Documents/fps_game/src/assets/heightmaps/fft-terrain.tga", shaderTerrain, texTerrain);
 
     double t0 = glfwGetTime();
     int frameCount = 0;

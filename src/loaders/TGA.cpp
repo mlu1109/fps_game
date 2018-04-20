@@ -6,8 +6,9 @@
 /* NOTE: Does not handle all types of TGA */
 
 /* 
- * Used tutorial:
+ * Used resources:
  * http://nehe.gamedev.net/tutorial/loading_compressed_and_uncompressed_tga's/22001/
+ * http://www.paulbourke.net/dataformats/tga/
  */
 
 TGA readHeader(std::istream &file, const std::string &path)
@@ -48,10 +49,6 @@ TGA loadUncompressedTGA(std::istream &file, const std::string &path)
     file.read(reinterpret_cast<char *>(tga.imageData.data()), tga.imageData.size());
     if (!file.good())
         throw std::runtime_error("Unexpected error while reading file: " + path);
-
-    // TGA stores colors in BGR, convert to RGB
-    for (int i = 0; i < tga.imageSize; i += tga.bytesPerPixel)
-        std::swap(tga.imageData[i], tga.imageData[i + 2]);
 
     //std::reverse(tga.imageData.begin(), tga.imageData.end());
     return tga;
@@ -99,11 +96,8 @@ TGA loadCompressedTGA(std::istream &file, const std::string &path)
         currentPixel += chunkHeader;
     }
 
-    // TGA stores colors in BGR, convert to RGB
     for (int i = 0; i < tga.imageSize; i += tga.bytesPerPixel)
         std::swap(tga.imageData[i], tga.imageData[i + 2]);
-
-    //std::reverse(tga.imageData.begin(), tga.imageData.end());
 
     return tga;
 }
@@ -122,10 +116,19 @@ TGA loadTGA(const std::string &path)
     if (!file.good())
         throw std::runtime_error("Unexpected error while reading file: " + path);
 
+    TGA tga;
     if (header == uncompressedTGAHeader)
-        return loadUncompressedTGA(file, path);
+        tga = loadUncompressedTGA(file, path);
     else if (header == compressedTGAHeader)
-        return loadCompressedTGA(file, path);
+        tga = loadCompressedTGA(file, path);
     else
         throw std::runtime_error("Unhandled TGA header in file: " + path);
+
+    // TGA stores colors in BGR, convert to RGB
+    for (int i = 0; i < tga.imageSize; i += tga.bytesPerPixel)
+        std::swap(tga.imageData[i], tga.imageData[i + 2]);
+
+    //std::reverse(tga.imageData.begin(), tga.imageData.end());
+    return tga;
+    
 }

@@ -20,7 +20,7 @@ class Camera
     float m_fovy = M_PI / 4.0f;
     float m_aspect = 4.0f / 3.0f;
     float m_near = 0.1f;
-    float m_far = 100.0f;
+    float m_far = 200.0f;
 
     void updateDirection();
     void updatePosition();
