@@ -1,11 +1,11 @@
 #include "Heightmap.hpp"
 
-HeightMap::HeightMap(int width, int height, const std::vector<unsigned char> &data, int stride, const std::shared_ptr<Shader> &shader)
+HeightMap::HeightMap(int width, int height, const std::vector<unsigned char> &data, int stride, const std::shared_ptr<Shader> &shader, const std::shared_ptr<Texture> &texture)
     : m_width{width}, m_height{height}
 {
-    int quadWidth = 5;
-    int quadHeight = 5;
-    int scaleHeight = 1;
+    int quadWidth = 1;
+    int quadHeight = 1;
+    int scaleHeight = 10;
     int vertexCount = width * height;
     int triangleCount = (width - 1) * (height - 1) * 2; // quads * 2
     std::vector<Vertex> vertices(vertexCount);
@@ -23,8 +23,9 @@ HeightMap::HeightMap(int width, int height, const std::vector<unsigned char> &da
                 static_cast<float>(y) / scaleHeight,
                 static_cast<float>(z) * quadHeight};
             v.texCoord = {
-                static_cast<float>(x) / width,
-                static_cast<float>(z) / height};
+                static_cast<float>(x),
+                static_cast<float>(z)};
+            v.color = {static_cast<GLubyte>(x), y, static_cast<GLubyte>(z), 255};
         }
     }
 
@@ -87,5 +88,5 @@ HeightMap::HeightMap(int width, int height, const std::vector<unsigned char> &da
     }
 
     auto vertexArray = std::make_shared<VertexArray>(vertices, indices);
-    m_mesh = {shader, nullptr, vertexArray};
+    m_mesh = {shader, texture, vertexArray};
 }

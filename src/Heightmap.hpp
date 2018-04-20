@@ -11,8 +11,7 @@ class HeightMap : public Drawable
     glm::mat4 m_modelView{};
 
   public:
-    HeightMap(int width, int height, const std::vector<unsigned char> &data, int stride, const std::shared_ptr<Shader> &shader);
-    
+    HeightMap(int width, int height, const std::vector<unsigned char> &data, int stride, const std::shared_ptr<Shader> &shader, const std::shared_ptr<Texture> &texture);
     // Drawable
     const std::shared_ptr<Shader> &getShader() const override { return m_mesh.shader; }
     const std::shared_ptr<Texture> &getTexture() const override { return m_mesh.texture; }

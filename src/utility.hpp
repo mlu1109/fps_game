@@ -15,4 +15,4 @@
 
 std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const std::string &objPath);
 std::shared_ptr<Texture> newTextureFromTGA(const std::string &tgaPath);
-HeightMap newHeightMapFromTGA(const std::string &tgaPath, const std::shared_ptr<Shader>& shader);
+HeightMap newHeightMapFromTGA(const std::string &tgaPath, const std::shared_ptr<Shader>& shader, const std::shared_ptr<Texture> &texture);
