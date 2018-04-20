@@ -27,7 +27,7 @@ VertexArray::VertexArray(const std::vector<Vertex> &vertices)
 
     glVertexAttribPointer(ATTRIB_POSITION, 3, GL_FLOAT, GL_FALSE, stride, offsetPosition);
     glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, stride, offsetNormal);
-    glVertexAttribPointer(ATTRIB_COLOR, 4, GL_BYTE, GL_TRUE, stride, offsetColor);
+    glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, stride, offsetColor);
     glVertexAttribPointer(ATTRIB_TEX_COORD, 2, GL_FLOAT, GL_FALSE, stride, offsetTexCoord);
 
     glEnableVertexAttribArray(ATTRIB_POSITION);
