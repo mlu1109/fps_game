@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 #include <memory>
+#include <utility>
 #include <vector>
 #include "Heightmap.hpp"
 #include "loaders/OBJ.hpp"
@@ -13,6 +14,8 @@
  * A bunch of helper functions that have not found a better home
  */
 
+std::pair<std::vector<Vertex>, std::vector<GLuint>> getVertexDataFromOBJ(const OBJ &);
 std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const std::string &objPath);
+std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const OBJ &);
 std::shared_ptr<Texture> newTextureFromTGA(const std::string &tgaPath);
-HeightMap newHeightMapFromTGA(const std::string &tgaPath, const std::shared_ptr<Shader>& shader, const std::shared_ptr<Texture> &texture);
+HeightMap newHeightMapFromTGA(const std::string &tgaPath, const std::shared_ptr<Shader> &shader, const std::shared_ptr<Texture> &texture);

@@ -2,9 +2,8 @@
 #include "utility.hpp"
 
 /*
- * newVertexArrayFromOBJ
+ * getVertexDataFromOBJ
  */
-
 
 bool operator<(const Vertex &lhs, const Vertex &rhs)
 {
@@ -20,13 +19,10 @@ bool operator<(const Vertex &lhs, const Vertex &rhs)
     return false; // equal
 }
 
-std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const std::string &objPath)
+std::pair<std::vector<Vertex>, std::vector<GLuint>> getVertexDataFromOBJ(const OBJ &obj)
 {
-    // Because .obj face elements and vertex/texcoord/normal triplets are not guaranteed to have a
+    // Because OBJ face elements and vertex/texcoord/normal triplets are not guaranteed to have a
     // one-to-one mapping new vertex/texcoord/normal triplets might need to be generated.
-
-    OBJ obj = loadOBJ(objPath);
-
     std::map<Vertex, GLuint> vertexToIndex;
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
@@ -38,7 +34,7 @@ std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const std::string &objPath)
 
         for (const auto &f : face)
         {
-            // .obj files have 1-based array indices.
+            // OBJ have 1-based array indices.
             int vIdx = f.v - 1;
             int vnIdx = f.vn - 1;
             int vtIdx = f.vt - 1;
@@ -69,7 +65,23 @@ std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const std::string &objPath)
         }
     }
 
-    return std::make_shared<VertexArray>(vertices, indices);
+    return std::make_pair(std::move(vertices), std::move(indices));
+}
+
+/*
+ * newVertexArrayFromOBJ
+ */
+
+std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const std::string &objPath)
+{
+    OBJ obj = loadOBJ(objPath);
+    return newVertexArrayFromOBJ(obj);
+}
+
+std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const OBJ &obj)
+{
+    auto vertexData = getVertexDataFromOBJ(obj);
+    return std::make_shared<VertexArray>(std::move(vertexData.first), std::move(vertexData.second));
 }
 
 /*
