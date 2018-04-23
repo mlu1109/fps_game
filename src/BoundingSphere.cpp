@@ -8,7 +8,7 @@
  * https://www.researchgate.net/publication/242453691_An_Efficient_Bounding_Sphere
  */
 
-BoundingSphere getBoundingSphere(const OBJ &obj)
+BoundingSphere::BoundingSphere(const OBJ &obj)
 {
     // Get vertices from model
     auto vertexData = getVertexDataFromOBJ(obj);
@@ -60,5 +60,15 @@ BoundingSphere getBoundingSphere(const OBJ &obj)
         center = (radius * center + (_radius - radius) * v) / _radius;
     }
 
-    return BoundingSphere{center, radius};
+    m_center = center;
+    m_radius = radius;
+}
+
+BoundingSphere BoundingSphere::getTransformed(const glm::vec3 &T, const glm::vec3 &S) const
+{
+    float maxScale = std::max(S.x, std::max(S.y, S.z));
+    float radius = m_radius * maxScale;
+    glm::vec3 center = m_center + T;
+    
+    return BoundingSphere(center, radius);
 }

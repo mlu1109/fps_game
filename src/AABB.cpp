@@ -1,3 +1,4 @@
+#include <array>
 #include <glm/gtx/euler_angles.hpp>
 #include "AABB.hpp"
 #include "utility.hpp"
@@ -23,7 +24,7 @@ AABB::AABB(const OBJ &obj)
         }
 }
 
-AABB AABB::getRotated(const glm::vec3 &r) const
+AABB AABB::getTransformed(const glm::vec3 &T, const glm::vec3 &R, const glm::vec3 &S) const
 {
     std::array<glm::vec3, 8> vertices{
         // Bottom
@@ -38,7 +39,7 @@ AABB AABB::getRotated(const glm::vec3 &r) const
         glm::vec3{m_min.x, m_max.y, m_min.z},
     };
 
-    glm::mat3 rotMat = glm::orientate3(r);
+    glm::mat3 rotMat = glm::orientate3(R);
     for (auto &v : vertices)
         v = rotMat * v;
 
@@ -54,5 +55,8 @@ AABB AABB::getRotated(const glm::vec3 &r) const
                 max[i] = v[i];
         }
     
+    glm::mat4 transform = glm::translate(T) * glm::scale(S);
+    min = transform * glm::vec4(min, 1.0);
+    max = transform * glm::vec4(max, 1.0);
     return AABB(min, max);
 }

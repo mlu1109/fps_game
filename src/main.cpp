@@ -77,8 +77,8 @@ int main()
     //auto teapotOBJ = loadOBJ("/home/matti/Documents/fps_game/src/assets/models/cube.obj");
     auto teapotVA = newVertexArrayFromOBJ(teapotOBJ);
 
-    auto teapotBoundingSphere = getBoundingSphere(teapotOBJ);
-    AABB teapotAABB{teapotOBJ};
+    BoundingSphere teapotBoundingSphere(teapotOBJ);
+    AABB teapotAABB(teapotOBJ);
     Mesh teapotMesh{shaderTexture, nullptr, teapotVA};
     Model teapotModel{teapotMesh};
     teapotModel.setAABB(teapotAABB);
@@ -96,16 +96,16 @@ int main()
         renderer.pre();
         renderer.render(heightMap);
         renderer.render(teapotModel);
-        auto bs = teapotModel.getTransformedBoundingSphere();
-        auto aabb = teapotModel.getAABB();
+        BoundingSphere bs = teapotModel.getBoundingSphere();
+        AABB aabb = teapotModel.getAABB();
         renderer.enableWireframe();
-        //renderer.render(shaderNormal, vaSphere, nullptr, Transform{bs.center, {0, 0, 0}, {bs.radius, bs.radius, bs.radius}}.getTransform());
-        Transform t = teapotModel.getTransform();
-        auto scale = aabb.getScale();
-        renderer.render(shaderNormal, vaCube, nullptr, Transform{t.T, {0, 0, 0}, scale}.getTransform());
+        renderer.render(shaderNormal, vaSphere, nullptr, bs.getTransform().getMatrix());
+        renderer.render(shaderNormal, vaCube, nullptr, aabb.getTransform().getMatrix());
         renderer.disableWireframe();
         renderer.post();
         teapotModel.rotate({0.01, 0.01, 0.01});
+        teapotModel.translate({0.005, 0.005, 0.005});
+        teapotModel.scale({0.005, 0.005, 0.005});
         teapotModel.updateModelWorld();
         ++frameCount;
         double t1 = glfwGetTime();

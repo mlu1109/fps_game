@@ -17,7 +17,8 @@ class Model : public Drawable
 
   public:
     Model(const Mesh &mesh, const Transform &transform = Transform{})
-        : m_mesh{mesh}, m_transform{transform} { updateModelWorld(); }
+        : m_mesh(mesh), m_transform(transform) { updateModelWorld(); }
+
 
     // Drawable
     const std::shared_ptr<Shader> &getShader() const override { return m_mesh.shader; }
@@ -28,17 +29,17 @@ class Model : public Drawable
     const Transform &getTransform() const { return m_transform; }
 
     void setAABB(const AABB &aabb) { m_aabb = aabb; };
-    void setBoundingSphere(const BoundingSphere& bs) { m_boundingSphere = bs; }
+    void setBoundingSphere(const BoundingSphere &bs) { m_boundingSphere = bs; }
     void setTranslate(const glm::vec3 &v) { m_transform.T = v; }
     void setRotate(const glm::vec3 &v) { m_transform.R = v; }
     void setScale(const glm::vec3 &v) { m_transform.S = v; }
 
-    const BoundingSphere &getBoundingSphere() const { return m_boundingSphere; }
-    BoundingSphere getTransformedBoundingSphere() const;
-    AABB getAABB() const { return m_aabb.getRotated(m_transform.R); }
+    BoundingSphere getBoundingSphere() const { return m_boundingSphere.getTransformed(m_transform.T, m_transform.S); }
+    AABB getAABB() const { return m_aabb.getTransformed(m_transform.T, m_transform.R, m_transform.S); }
 
     void translate(const glm::vec3 &v) { m_transform.T += v; }
     void rotate(const glm::vec3 &v) { m_transform.R += v; }
     void scale(const glm::vec3 &v) { m_transform.S += v; };
-    void updateModelWorld() { m_modelWorld = m_transform.getTransform(); }
+    void updateModelWorld() { m_modelWorld = m_transform.getMatrix(); }
 };
+

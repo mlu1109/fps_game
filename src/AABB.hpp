@@ -1,6 +1,8 @@
-#include <array>
 #include <glm/glm.hpp>
 #include "loaders/OBJ.hpp"
+#include "Transform.hpp"
+
+#include "glm/print.hpp"
 
 class AABB
 {
@@ -15,7 +17,8 @@ class AABB
     const glm::vec3 &getMin() const { return m_min; }
     const glm::vec3 &getMax() const { return m_max; }
 
-    glm::vec3 getScale() const { return glm::vec3{m_max.x - m_min.x, m_max.y - m_min.y, m_max.z - m_min.z} * 0.5f; }
-
-    AABB getRotated(const glm::vec3 &) const;
+    glm::vec3 getScale() const { return glm::vec3(m_max.x - m_min.x, m_max.y - m_min.y, m_max.z - m_min.z) * 0.5f; }
+    glm::vec3 getCenter() const { return glm::vec3(m_max.x + m_min.x, m_max.y + m_min.y, m_max.z + m_min.z) * 0.5f; }
+    Transform getTransform() const { std::cout << getCenter() << '\n'; return Transform{getCenter(), {0, 0, 0}, getScale()}; }
+    AABB getTransformed(const glm::vec3 &T, const glm::vec3 &R, const glm::vec3 &S) const;
 };
