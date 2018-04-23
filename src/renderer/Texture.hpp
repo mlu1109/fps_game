@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <vector>
 
+
 class Texture
 {
     GLuint m_id;
@@ -27,5 +28,4 @@ class Texture
     void bind() const { glBindTexture(m_target, m_id); }
     void setRepeat() const;
     void setClampToEdge() const;
-    
-};;
+};

@@ -1,5 +1,6 @@
 #include "Texture.hpp"
-#include <iostream> // remove
+
+
 Texture::Texture(const std::vector<GLubyte> &imageData, GLint internalFormat, GLsizei width, GLsizei height)
     : m_imageData{imageData}, m_internalFormat{internalFormat}, m_width{width}, m_height{height}
 {

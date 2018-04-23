@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <array>
 
+
 struct Vertex
 {
     std::array<GLfloat, 3> position; // x,y,z

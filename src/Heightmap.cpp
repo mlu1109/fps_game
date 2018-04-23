@@ -1,6 +1,10 @@
 #include "Heightmap.hpp"
 
-HeightMap::HeightMap(int width, int height, const std::vector<unsigned char> &data, int stride, const std::shared_ptr<Shader> &shader, const std::shared_ptr<Texture> &texture)
+
+HeightMap::HeightMap(int width, int height,
+                     const std::vector<unsigned char> &data, int stride,
+                     const std::shared_ptr<Shader> &shader,
+                     const std::shared_ptr<Texture> &texture)
     : m_width{width}, m_height{height}
 {
     int quadWidth = 2;

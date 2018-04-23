@@ -31,8 +31,8 @@ class Camera
     Camera();
 
     void setPosition(const glm::vec3 &p) { m_p = p;}
+    
     const glm::vec3 &getPosition() const { return m_p; }
-
     const glm::mat4 &getViewScreen() const { return m_viewScreen; }
     const glm::mat4 &getWorldView() const { return m_worldView; }
 
@@ -40,6 +40,5 @@ class Camera
     void pitch(float rad);
     void moveD(float amount);
     void moveR(float amount);
-
     void updateAspectRatio(int windowWidth, int windowHeight);
 };

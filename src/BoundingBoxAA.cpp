@@ -111,16 +111,6 @@ bool AABB::isIntersecting(const BoundingSphere &other) const
     const glm::vec3 &a_min = m_min;
     const glm::vec3 &b_center = other.getCenter();
 
-    /*
-    // Check if the center of the sphere is inside the AABB
-    if (a_min.x <= b_center.x && a_max.x >= b_center.x &&
-        a_min.y <= b_center.y && a_max.y >= b_center.y &&
-        a_min.z <= b_center.z && a_max.z >= b_center.z)
-    {
-        return true;
-    }
-    */
-
     // Closest vertex of the AABB to the center of the sphere
     glm::vec3 a_closest;
 

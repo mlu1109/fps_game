@@ -4,6 +4,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
+
 struct Transform
 {
     glm::vec3 T{0, 0, 0}; // Translate

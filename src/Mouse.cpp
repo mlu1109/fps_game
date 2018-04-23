@@ -1,6 +1,7 @@
 #include <GLFW/glfw3.h>
 #include "Mouse.hpp"
 
+
 void Mouse::onRelease(GLFWwindow *window, int button)
 {
     switch (button)

@@ -2,6 +2,7 @@
 #include <iostream>
 #include "glm/print.hpp"
 
+
 void handleKeyInput(GLFWwindow *window, Camera &camera)
 {
     const float speed = 0.4;

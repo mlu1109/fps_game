@@ -1,9 +1,9 @@
 #include <map>
-#include "utility.hpp"
+#include "Utility.hpp"
 
-/*
- * getVertexDataFromOBJ
- */
+
+// Vertex/Indices
+// -------------------------------------------------- 
 
 bool operator<(const Vertex &lhs, const Vertex &rhs)
 {
@@ -68,9 +68,9 @@ std::pair<std::vector<Vertex>, std::vector<GLuint>> getVertexDataFromOBJ(const O
     return std::make_pair(std::move(vertices), std::move(indices));
 }
 
-/*
- * newVertexArrayFromOBJ
- */
+
+// VertexArray
+// --------------------------------------------------
 
 std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const std::string &objPath)
 {
@@ -84,9 +84,9 @@ std::shared_ptr<VertexArray> newVertexArrayFromOBJ(const OBJ &obj)
     return std::make_shared<VertexArray>(std::move(vertexData.first), std::move(vertexData.second));
 }
 
-/*
- * newTextureFromTGA
- */
+
+// Texture
+// --------------------------------------------------
 
 std::shared_ptr<Texture> newTextureFromTGA(const std::string &tgaPath)
 {
@@ -94,9 +94,9 @@ std::shared_ptr<Texture> newTextureFromTGA(const std::string &tgaPath)
     return std::make_shared<Texture>(tga.imageData, tga.bitsPerPixel == 32 ? GL_RGBA : GL_RGB, tga.width, tga.height);
 }
 
-/*
- * newHeightMapFromTGA
- */
+
+// HeightMap
+// --------------------------------------------------
 
 HeightMap newHeightMapFromTGA(const std::string &tgaPath, const std::shared_ptr<Shader> &shader, const std::shared_ptr<Texture> &texture)
 {

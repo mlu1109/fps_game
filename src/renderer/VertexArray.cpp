@@ -2,6 +2,7 @@
 #include "VertexArray.hpp"
 #include "constants.hpp" // ATTRIB_...
 
+
 VertexArray::VertexArray(const std::vector<Vertex> &vertices)
 {
     glCreateVertexArrays(1, &m_id);

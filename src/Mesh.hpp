@@ -5,6 +5,7 @@
 #include "renderer/Texture.hpp"
 #include "renderer/Shader.hpp"
 
+
 struct Mesh
 {
     std::shared_ptr<Shader> shader;

@@ -3,6 +3,7 @@
 #include "renderer/Vertex.hpp"
 #include "renderer/Drawable.hpp"
 
+
 class HeightMap : public Drawable
 {
     Mesh m_mesh;
