@@ -1,13 +1,14 @@
-#include <algorithm>
 #include <glm/gtx/norm.hpp>
+#include "BoundingBoxAA.hpp"
 #include "BoundingSphere.hpp"
-#include "utility.hpp"
+#include "Utility.hpp"
 
-/*
- * Ritter's bounding sphere. Reference:
- * https://www.researchgate.net/publication/242453691_An_Efficient_Bounding_Sphere
- */
 
+BoundingSphere::BoundingSphere(const glm::vec3 &center, float radius)
+    : m_center(center), m_radius(radius) {}
+
+// Ritter's Bounding Sphere
+// Reference: https://www.researchgate.net/publication/242453691_An_Efficient_Bounding_Sphere
 BoundingSphere::BoundingSphere(const OBJ &obj)
 {
     // Get vertices from model
@@ -64,11 +65,36 @@ BoundingSphere::BoundingSphere(const OBJ &obj)
     m_radius = radius;
 }
 
-BoundingSphere BoundingSphere::getTransformed(const glm::vec3 &T, const glm::vec3 &S) const
+glm::vec3 BoundingSphere::getScale() const
 {
-    float maxScale = std::max(S.x, std::max(S.y, S.z));
+    return glm::vec3(m_radius, m_radius, m_radius);
+}
+
+BoundingSphere BoundingSphere::getTransformed(const Transform &t) const
+{
+    float maxScale = std::max(t.S.x, std::max(t.S.y, t.S.z));
     float radius = m_radius * maxScale;
-    glm::vec3 center = m_center + T;
-    
+    glm::vec3 center = m_center + t.T;
     return BoundingSphere(center, radius);
+}
+
+Transform BoundingSphere::getTransform() const
+{
+    return Transform{getCenter(), {0, 0, 0}, getScale()};
+}
+
+bool BoundingSphere::isIntersecting(const BoundingVolume &other) const
+{
+    return other.isIntersecting(*this);
+}
+
+bool BoundingSphere::isIntersecting(const AABB &other) const
+{
+    return other.isIntersecting(*this);
+}
+
+bool BoundingSphere::isIntersecting(const BoundingSphere &other) const
+{
+    float radius2 = (m_radius + other.m_radius) * (m_radius + other.m_radius);
+    return glm::distance2(m_center, other.m_center) < radius2;
 }

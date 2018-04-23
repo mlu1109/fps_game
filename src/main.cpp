@@ -2,19 +2,25 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <unordered_map>
-#include "Model.hpp"
-#include "Keyboard.hpp"
 #include "BoundingSphere.hpp"
-#include "callbacks.hpp"
+#include "Callbacks.hpp"
+#include "Keyboard.hpp"
+#include "Model.hpp"
+#include "Utility.hpp"
 #include "loaders/OBJ.hpp"
 #include "loaders/TGA.hpp"
 #include "renderer/Camera.hpp"
 #include "renderer/Renderer.hpp"
 #include "renderer/Shader.hpp"
 #include "renderer/VertexArrayCube.hpp"
-#include "utility.hpp"
-
 #include "glm/print.hpp"
+
+
+const std::string SHADER_DIR = "src/shaders/";
+const std::string TEXTURE_DIR = "src/assets/textures/";
+const std::string MODEL_DIR = "src/assets/models/";
+const std::string HEIGHTMAP_DIR = "src/assets/heightmaps/";
+
 
 GLFWwindow *initWindow()
 {
@@ -56,38 +62,40 @@ int main()
     Mouse mouse(&camera);
     initCallbacks(window, &mouse, &camera);
     // Shaders
-    auto shaderTerrain = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/terrain.vert", "/home/matti/Documents/fps_game/src/shaders/terrain.frag");
-    auto shaderTexture = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/plain_texture.vert", "/home/matti/Documents/fps_game/src/shaders/plain_texture.frag");
-    auto shaderNormal = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/color_normal.vert", "/home/matti/Documents/fps_game/src/shaders/color_normal.frag");
+    auto shaderTerrain = std::make_shared<Shader>(SHADER_DIR + "terrain.vert", SHADER_DIR + "terrain.frag");
+    auto shaderTexture = std::make_shared<Shader>(SHADER_DIR + "plain_texture.vert", SHADER_DIR + "plain_texture.frag");
+    auto shaderNormal = std::make_shared<Shader>(SHADER_DIR + "color_normal.vert", SHADER_DIR + "color_normal.frag");
+    auto shaderColor = std::make_shared<Shader>(SHADER_DIR + "color_solid.vert", SHADER_DIR + "color_solid.frag");
     // Textures
-    auto texCube = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/tsbk07/rutor.tga");
-    auto texTerrain = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/terrain50.tga");
-    auto texMissing = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/missing.tga");
+    auto texCube = newTextureFromTGA(TEXTURE_DIR + "tsbk07/rutor.tga");
+    auto texTerrain = newTextureFromTGA(TEXTURE_DIR + "terrain50.tga");
+    auto texMissing = newTextureFromTGA(TEXTURE_DIR + "missing.tga");
     texMissing->setRepeat();
     texCube->setRepeat();
     texTerrain->setRepeat();
     // VertexArrays
-    auto vaSphere = newVertexArrayFromOBJ("/home/matti/Documents/fps_game/src/assets/models/sphere.obj");
-    auto vaCube = newVertexArrayFromOBJ("/home/matti/Documents/fps_game/src/assets/models/cube.obj");
+    auto vaSphere = newVertexArrayFromOBJ(MODEL_DIR + "sphere.obj");
+    auto vaCube = newVertexArrayFromOBJ(MODEL_DIR + "cube.obj");
     // HeightMap
-    auto heightMap = newHeightMapFromTGA("/home/matti/Documents/fps_game/src/assets/heightmaps/fft-terrain.tga", shaderTerrain, texTerrain);
-    
+    auto heightMap = newHeightMapFromTGA(HEIGHTMAP_DIR + "fft-terrain.tga", shaderTerrain, texTerrain);
+
     // Model Teapot
-    auto teapotOBJ = loadOBJ("/home/matti/Documents/fps_game/src/assets/models/tsbk07/various/cow.obj");
-    //auto teapotOBJ = loadOBJ("/home/matti/Documents/fps_game/src/assets/models/cube.obj");
-    auto teapotVA = newVertexArrayFromOBJ(teapotOBJ);
+    auto modelOBJ = loadOBJ(MODEL_DIR + "tsbk07/various/cow.obj");
+    //auto teapotOBJ = loadOBJ(MODEL_DIR + "cube.obj");
+    auto modelVA = newVertexArrayFromOBJ(modelOBJ);
 
-    BoundingSphere teapotBoundingSphere(teapotOBJ);
-    AABB teapotAABB(teapotOBJ);
-    Mesh teapotMesh{shaderTexture, nullptr, teapotVA};
-    Model teapotModel{teapotMesh};
-    teapotModel.setAABB(teapotAABB);
+    BoundingSphere teapotBoundingSphere(modelOBJ);
+    AABB modelAABB(modelOBJ);
+    Mesh modelMesh{shaderNormal, nullptr, modelVA};
+    Model model{modelMesh};
+    model.setAABB(modelAABB);
+    model.setBoundingSphere(teapotBoundingSphere);
+    auto modelCopy = model;
+    model.scale({2, 2, 2});
 
-    teapotModel.setBoundingSphere(teapotBoundingSphere);
-    
     double t0 = glfwGetTime();
     int frameCount = 0;
-    
+
     renderer.setTextureMissing(texMissing);
     while (!glfwWindowShouldClose(window))
     {
@@ -95,18 +103,32 @@ int main()
         handleKeyInput(window, camera);
         renderer.pre();
         renderer.render(heightMap);
-        renderer.render(teapotModel);
-        BoundingSphere bs = teapotModel.getBoundingSphere();
-        AABB aabb = teapotModel.getAABB();
-        renderer.enableWireframe();
-        renderer.render(shaderNormal, vaSphere, nullptr, bs.getTransform().getMatrix());
-        renderer.render(shaderNormal, vaCube, nullptr, aabb.getTransform().getMatrix());
-        renderer.disableWireframe();
+        renderer.render(model);
+        renderer.render(modelCopy);
+        BoundingSphere bs0 = model.getBoundingSphere();
+        BoundingSphere bs1 = modelCopy.getBoundingSphere();
+        AABB aabb0 = model.getAABB();
+        AABB aabb1 = modelCopy.getAABB();
+        renderer.setShader(shaderColor);
+
+        if (aabb0.isIntersecting(bs1))
+            renderer.setUniformColor(255, 0, 25, 20);
+        else
+            renderer.setUniformColor(0, 255, 25, 20);
+
+        renderer.enableBlend();
+        //renderer.render(shaderColor, vaSphere, nullptr, bs0.getTransform().getMatrix());
+        renderer.render(shaderColor, vaSphere, nullptr, bs1.getTransform().getMatrix());
+        renderer.render(shaderColor, vaCube, nullptr, aabb0.getTransform().getMatrix());
+        //renderer.render(shaderColor, vaCube, nullptr, aabb1.getTransform().getMatrix());
+        renderer.disableBlend();
         renderer.post();
-        teapotModel.rotate({0.01, 0.01, 0.01});
-        teapotModel.translate({0.005, 0.005, 0.005});
-        teapotModel.scale({0.005, 0.005, 0.005});
-        teapotModel.updateModelWorld();
+        model.rotate({0.01, 0.01, 0.01});
+        model.translate({0.001, 0.001, 0.001});
+        //model.scale({0.005, 0.005, 0.005});
+        model.updateModelWorld();
+        modelCopy.rotate({0.01, 0.01, 0.01});
+        modelCopy.updateModelWorld();
         ++frameCount;
         double t1 = glfwGetTime();
         if (t1 - t0 >= 1)
