@@ -29,7 +29,7 @@ TGA readHeader(std::istream &file, const std::string &path)
     if (tga.width <= 0 || tga.height <= 0 ||
         (tga.bitsPerPixel != 24 && tga.bitsPerPixel != 32))
     {
-        throw std::runtime_error("Invalid TGA: " + path);
+        throw std::runtime_error("Unhandled TGA type: " + path);
     }
 
     if (tga.bitsPerPixel == 24)
@@ -50,7 +50,6 @@ TGA loadUncompressedTGA(std::istream &file, const std::string &path)
     if (!file.good())
         throw std::runtime_error("Unexpected error while reading file: " + path);
 
-    //std::reverse(tga.imageData.begin(), tga.imageData.end());
     return tga;
 }
 
@@ -96,10 +95,36 @@ TGA loadCompressedTGA(std::istream &file, const std::string &path)
         currentPixel += chunkHeader;
     }
 
+    return tga;
+}
+
+void bgrToRGB(TGA &tga)
+{
     for (int i = 0; i < tga.imageSize; i += tga.bytesPerPixel)
         std::swap(tga.imageData[i], tga.imageData[i + 2]);
+}
 
-    return tga;
+void flipTGA(TGA &tga)
+{
+    int row_a = 0;
+    int row_b = tga.height - 1;
+    while (row_a <= row_b)
+    {
+        for (int c = 0; c < tga.width; ++c)
+        {
+            int col_a = c;
+            int col_b = tga.width - 1 - c;
+            for (int i = 0; i < tga.bytesPerPixel; ++i)
+            {
+                int i_a = (row_a * tga.width + col_a) * tga.bytesPerPixel;
+                int i_b = (row_b * tga.width + col_b) * tga.bytesPerPixel;
+                std::swap(tga.imageData[i_a + i], tga.imageData[i_b + i]);
+            }
+        }
+
+        ++row_a;
+        --row_b;
+    }
 }
 
 TGA loadTGA(const std::string &path)
@@ -124,11 +149,8 @@ TGA loadTGA(const std::string &path)
     else
         throw std::runtime_error("Unhandled TGA header in file: " + path);
 
-    // TGA stores colors in BGR, convert to RGB
-    for (int i = 0; i < tga.imageSize; i += tga.bytesPerPixel)
-        std::swap(tga.imageData[i], tga.imageData[i + 2]);
+    bgrToRGB(tga);
+    flipTGA(tga);
 
-    //std::reverse(tga.imageData.begin(), tga.imageData.end());
     return tga;
-    
 }

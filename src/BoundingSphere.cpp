@@ -1,9 +1,7 @@
 #include <algorithm>
 #include <glm/gtx/norm.hpp>
 #include "BoundingSphere.hpp"
-
-#include <iostream>
-#include "glm/print.hpp"
+#include "utility.hpp"
 
 /*
  * Ritter's bounding sphere. Reference:

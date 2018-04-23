@@ -3,6 +3,8 @@
 #include <iostream>
 #include <unordered_map>
 #include "Model.hpp"
+#include "Keyboard.hpp"
+#include "BoundingSphere.hpp"
 #include "callbacks.hpp"
 #include "loaders/OBJ.hpp"
 #include "loaders/TGA.hpp"
@@ -11,6 +13,8 @@
 #include "renderer/Shader.hpp"
 #include "renderer/VertexArrayCube.hpp"
 #include "utility.hpp"
+
+#include "glm/print.hpp"
 
 GLFWwindow *initWindow()
 {
@@ -43,78 +47,66 @@ GLFWwindow *initWindow()
     return window;
 }
 
-void handleKeyInput(GLFWwindow *window, Camera &camera)
-{
-    const float speed = 0.4;
-    glm::vec3 translate{0};
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.moveD(-speed);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.moveR(-speed);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.moveD(speed);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.moveR(speed);
-
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        camera.pitch(speed * 0.1);
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        camera.yaw(-speed * 0.1);
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        camera.pitch(-speed * 0.1);
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        camera.yaw(speed * 0.1);
-}
-
 int main()
 {
     GLFWwindow *window = initWindow();
-    //Camera camera{{-30.0f, -20.0f, -50.0f}, {20.0f, 0.0f, 20.0f}};
-    //Camera camera{{30.0f, -20.0f, -50.0f}, {20.0f, 0.0f, 20.0f}};
-    Camera camera{{-30.0f, -20.0f, 50.0f}, {20.0f, 0.0f, 20.0f}};
-    //Camera camera{{-30.0f, -20.0f, -50.0f}, {20.0f, 0.0f, 20.0f}};
+    Camera camera;
     Renderer renderer{window, &camera};
     // Input
     Mouse mouse(&camera);
     initCallbacks(window, &mouse, &camera);
-
+    // Shaders
     auto shaderTerrain = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/terrain.vert", "/home/matti/Documents/fps_game/src/shaders/terrain.frag");
-    auto shaderCube = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/plain_texture.vert", "/home/matti/Documents/fps_game/src/shaders/plain_texture.frag");
-    //auto shader = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/color_normal.vert", "/home/matti/Documents/fps_game/src/shaders/color_normal.frag");
+    auto shaderTexture = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/plain_texture.vert", "/home/matti/Documents/fps_game/src/shaders/plain_texture.frag");
+    auto shaderNormal = std::make_shared<Shader>("/home/matti/Documents/fps_game/src/shaders/color_normal.vert", "/home/matti/Documents/fps_game/src/shaders/color_normal.frag");
+    // Textures
     auto texCube = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/tsbk07/rutor.tga");
-    texCube->setRepeat();
     auto texTerrain = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/terrain50.tga");
+    auto texMissing = newTextureFromTGA("/home/matti/Documents/fps_game/src/assets/textures/missing.tga");
+    texMissing->setRepeat();
+    texCube->setRepeat();
     texTerrain->setRepeat();
-    //auto va = newVertexArrayFromOBJ("/home/matti/Documents/fps_game/src/assets/models/tsbk07/bunnyplus.obj");
-    auto va = newCubeIdx();
-
-    std::array<Model, 6> cube = {
-        Model{Mesh{shaderCube, texCube, va}, Transform{{5, 0, 5}}},
-        Model{Mesh{shaderCube, texCube, va}, Transform{{-5, 0, -5}}},
-        Model{Mesh{shaderCube, texCube, va}, Transform{{-5, 0, 5}}},
-        Model{Mesh{shaderCube, texCube, va}, Transform{{5, 0, -5}}},
-        Model{Mesh{shaderCube, texCube, va}, Transform{{0, 0, 0}}},
-        Model{Mesh{shaderCube, texCube, va}, Transform{{20, 0, 20}, {0, 0, 0}, {3, 3, 3}}},
-    };
-
+    // VertexArrays
+    auto vaSphere = newVertexArrayFromOBJ("/home/matti/Documents/fps_game/src/assets/models/sphere.obj");
+    auto vaCube = newVertexArrayFromOBJ("/home/matti/Documents/fps_game/src/assets/models/cube.obj");
+    // HeightMap
     auto heightMap = newHeightMapFromTGA("/home/matti/Documents/fps_game/src/assets/heightmaps/fft-terrain.tga", shaderTerrain, texTerrain);
+    
+    // Model Teapot
+    auto teapotOBJ = loadOBJ("/home/matti/Documents/fps_game/src/assets/models/tsbk07/various/cow.obj");
+    //auto teapotOBJ = loadOBJ("/home/matti/Documents/fps_game/src/assets/models/cube.obj");
+    auto teapotVA = newVertexArrayFromOBJ(teapotOBJ);
 
+    auto teapotBoundingSphere = getBoundingSphere(teapotOBJ);
+    AABB teapotAABB{teapotOBJ};
+    Mesh teapotMesh{shaderTexture, nullptr, teapotVA};
+    Model teapotModel{teapotMesh};
+    teapotModel.setAABB(teapotAABB);
+
+    teapotModel.setBoundingSphere(teapotBoundingSphere);
+    
     double t0 = glfwGetTime();
     int frameCount = 0;
+    
+    renderer.setTextureMissing(texMissing);
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
         handleKeyInput(window, camera);
-        for (auto &c : cube)
-        {
-            c.rotate({0.01, 0.01, 0.01});
-            c.updateModelWorld();
-        }
         renderer.pre();
         renderer.render(heightMap);
-        for (auto &c : cube)
-            renderer.render(c);
+        renderer.render(teapotModel);
+        auto bs = teapotModel.getTransformedBoundingSphere();
+        auto aabb = teapotModel.getAABB();
+        renderer.enableWireframe();
+        //renderer.render(shaderNormal, vaSphere, nullptr, Transform{bs.center, {0, 0, 0}, {bs.radius, bs.radius, bs.radius}}.getTransform());
+        Transform t = teapotModel.getTransform();
+        auto scale = aabb.getScale();
+        renderer.render(shaderNormal, vaCube, nullptr, Transform{t.T, {0, 0, 0}, scale}.getTransform());
+        renderer.disableWireframe();
         renderer.post();
+        teapotModel.rotate({0.01, 0.01, 0.01});
+        teapotModel.updateModelWorld();
         ++frameCount;
         double t1 = glfwGetTime();
         if (t1 - t0 >= 1)

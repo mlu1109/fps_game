@@ -3,7 +3,7 @@
 
 std::ostream &operator<<(std::ostream &os, const glm::vec3 &v)
 {
-    os << "["  << std::setw(4) << v.x << std::setw(4) << v.y << std::setw(4) << v.z << std::setw(4) << "]";
+    os << "["  << std::setw(4) << v.x << "," << std::setw(4) << v.y << "," << std::setw(4) << v.z << std::setw(4) << "]";
     return os;
 }
 

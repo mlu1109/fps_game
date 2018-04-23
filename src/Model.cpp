@@ -1,5 +1,4 @@
 #include "Model.hpp"
-#include <iostream>
 
 BoundingSphere Model::getTransformedBoundingSphere() const
 {

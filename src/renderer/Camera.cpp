@@ -3,19 +3,14 @@
 #include "Camera.hpp"
 #include "constants.hpp"
 
-Camera::Camera(const glm::vec3 &pos, const glm::vec3 &look)
-    : m_p(pos)
+Camera::Camera()
 {
-    glm::vec3 dv = look - pos;
-    m_anglePitch = atan2(dv.y, sqrt(dv.x * dv.x + dv.z * dv.z));
-    m_angleYaw = atan2(dv.z, dv.x) - M_PI/2; // Does not set yaw angle correctly
     updateDirection();
     updateWorldView();
 }
 
 void Camera::updateDirection()
 {
-    std::cout << m_angleYaw << '\n';
     m_d.x = cos(m_anglePitch) * sin(m_angleYaw);
     m_d.y = sin(m_anglePitch);
     m_d.z = cos(m_anglePitch) * cos(m_angleYaw);

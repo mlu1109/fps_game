@@ -3,9 +3,9 @@
 HeightMap::HeightMap(int width, int height, const std::vector<unsigned char> &data, int stride, const std::shared_ptr<Shader> &shader, const std::shared_ptr<Texture> &texture)
     : m_width{width}, m_height{height}
 {
-    int quadWidth = 1;
-    int quadHeight = 1;
-    int scaleHeight = 10;
+    int quadWidth = 2;
+    int quadHeight = 2;
+    int scaleHeight = 5;
     int vertexCount = width * height;
     int triangleCount = (width - 1) * (height - 1) * 2; // quads * 2
     std::vector<Vertex> vertices(vertexCount);

@@ -1,10 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "renderer/Drawable.hpp"
-#include "renderer/VertexArray.hpp"
 #include "loaders/OBJ.hpp"
-#include "utility.hpp"
 
 struct BoundingSphere
 {

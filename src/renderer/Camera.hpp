@@ -28,7 +28,10 @@ class Camera
     void updateViewScreen() { m_viewScreen = glm::perspective(m_fovy, m_aspect, m_near, m_far); }
 
   public:
-    Camera(const glm::vec3 &position, const glm::vec3 &look);
+    Camera();
+
+    void setPosition(const glm::vec3 &p) { m_p = p;}
+    const glm::vec3 &getPosition() const { return m_p; }
 
     const glm::mat4 &getViewScreen() const { return m_viewScreen; }
     const glm::mat4 &getWorldView() const { return m_worldView; }
