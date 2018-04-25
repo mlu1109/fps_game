@@ -1,3 +1,4 @@
+#include "Error.hpp"
 #include "Renderer.hpp"
 #include "constants.hpp"
 
@@ -52,6 +53,7 @@ void Renderer::render(const Drawable &object)
 
 void Renderer::post()
 {
+    printError("Renderer::post");
     m_boundShader = nullptr;
     glfwSwapBuffers(m_window);
 }

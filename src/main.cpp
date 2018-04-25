@@ -27,7 +27,6 @@ GLFWwindow *initWindow()
     const int WIDTH = 800;
     const int HEIGHT = 600;
     const char *TITLE = "ENGINE_3D";
-
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
@@ -71,6 +70,7 @@ int main()
     auto texTerrain = newTextureFromTGA(TEXTURE_DIR + "terrain50.tga");
     auto texMissing = newTextureFromTGA(TEXTURE_DIR + "missing.tga");
     texMissing->setRepeat();
+    renderer.setTextureMissing(texMissing);
     texCube->setRepeat();
     texTerrain->setRepeat();
     // VertexArrays
@@ -80,13 +80,12 @@ int main()
     auto heightMap = newHeightMapFromTGA(HEIGHTMAP_DIR + "fft-terrain.tga", shaderTerrain, texTerrain);
 
     // Model Teapot
-    auto modelOBJ = loadOBJ(MODEL_DIR + "tsbk07/various/cow.obj");
-    //auto teapotOBJ = loadOBJ(MODEL_DIR + "cube.obj");
+    auto modelOBJ = loadOBJ(MODEL_DIR + "cube.obj");
     auto modelVA = newVertexArrayFromOBJ(modelOBJ);
 
     BoundingSphere teapotBoundingSphere(modelOBJ);
     AABB modelAABB(modelOBJ);
-    Mesh modelMesh{shaderNormal, nullptr, modelVA};
+    Mesh modelMesh{shaderTexture, nullptr, modelVA};
     Model model{modelMesh};
     model.setAABB(modelAABB);
     model.setBoundingSphere(teapotBoundingSphere);
@@ -103,8 +102,10 @@ int main()
         handleKeyInput(window, camera);
         renderer.pre();
         renderer.render(heightMap);
+        renderer.enableWireframe();
         renderer.render(model);
         renderer.render(modelCopy);
+        renderer.disableWireframe();
         BoundingSphere bs0 = model.getBoundingSphere();
         BoundingSphere bs1 = modelCopy.getBoundingSphere();
         AABB aabb0 = model.getAABB();
@@ -118,13 +119,13 @@ int main()
 
         renderer.enableBlend();
         //renderer.render(shaderColor, vaSphere, nullptr, bs0.getTransform().getMatrix());
-        renderer.render(shaderColor, vaSphere, nullptr, bs1.getTransform().getMatrix());
+        //renderer.render(shaderColor, vaSphere, nullptr, bs1.getTransform().getMatrix());
         renderer.render(shaderColor, vaCube, nullptr, aabb0.getTransform().getMatrix());
-        //renderer.render(shaderColor, vaCube, nullptr, aabb1.getTransform().getMatrix());
+        renderer.render(shaderColor, vaCube, nullptr, aabb1.getTransform().getMatrix());
         renderer.disableBlend();
         renderer.post();
         model.rotate({0.01, 0.01, 0.01});
-        model.translate({0.001, 0.001, 0.001});
+        model.translate({0.01, 0.01, 0.01});
         //model.scale({0.005, 0.005, 0.005});
         model.updateModelWorld();
         modelCopy.rotate({0.01, 0.01, 0.01});

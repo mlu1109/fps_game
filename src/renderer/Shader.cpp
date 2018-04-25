@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include "Shader.hpp"
+#include "Error.hpp"
 
 std::string readFile(const std::string &path)
 {
@@ -66,7 +67,7 @@ GLuint loadShaders(const std::string &vertPath, const std::string &fragPath)
     glCompileShader(fragmentShader);
 
     isCompiled = 0;
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isCompiled);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isCompiled);
     if (isCompiled == GL_FALSE)
     {
         std::cout << getShaderInfoLog(fragmentShader) << '\n';

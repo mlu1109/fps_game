@@ -1,4 +1,5 @@
 #include "Texture.hpp"
+#include "Error.hpp"
 
 
 Texture::Texture(const std::vector<GLubyte> &imageData, GLint internalFormat, GLsizei width, GLsizei height)
@@ -6,8 +7,6 @@ Texture::Texture(const std::vector<GLubyte> &imageData, GLint internalFormat, GL
 {
     glGenTextures(1, &m_id);
     glBindTexture(m_target, m_id);
-
-    glGenerateMipmap(m_target);
     glTexImage2D(m_target, m_level, m_internalFormat, m_width, m_height, m_border, m_internalFormat, m_type, m_imageData.data());
     glGenerateMipmap(m_target);
     glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
