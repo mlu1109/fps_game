@@ -1,8 +1,9 @@
 #include <algorithm>
 #include <exception>
 #include <fstream>
-#include <sstream>
 #include <iostream>
+#include <map>
+#include <sstream>
 #include "OBJ.hpp"
 
 /* 
@@ -137,37 +138,32 @@ FaceElement parseTriplet(const std::string &args)
  * Parse lines 
  */
 
-void parseV(const std::string &args, OBJ &result)
+void OBJ::parseV(const std::string &args)
 {
-    result.cntV += 1;
     glm::vec3 v = parseVec3(args);
-    result.v.push_back(v);
+    m_v.push_back(v);
 }
 
-void parseVT(const std::string &args, OBJ &result)
+void OBJ::parseVT(const std::string &args)
 {
-    result.cntVT += 1;
     glm::vec2 vt = parseVec2(args);
-    result.vt.push_back(vt);
+    m_vt.push_back(vt);
 }
 
-void parseVN(const std::string &args, OBJ &result)
+void OBJ::parseVN(const std::string &args)
 {
-    result.cntVN += 1;
     glm::vec3 vn = parseVec3(args);
-    result.vn.push_back(vn);
+    m_vn.push_back(vn);
 }
 
-void parseF(const std::string &args, OBJ &result)
+void OBJ::parseF(const std::string &args)
 {
-    result.cntF += 1;
     std::vector<FaceElement> face;
     std::stringstream ss(args);
     std::string arg;
     std::vector<FaceElement> fes;
     while (ss >> arg)
     {
-        result.cntFE += 1;
         FaceElement fe;
         if (isSingleFE(arg))
             fe = parseSingle(arg);
@@ -175,17 +171,15 @@ void parseF(const std::string &args, OBJ &result)
             fe = parseTriplet(arg);
         fes.push_back(fe);
     }
-    result.f.push_back(fes);
+    m_f.push_back(fes);
 }
 
-/* 
- * Parse file with path
+/*
+ * Entry
  */
 
-OBJ loadOBJ(const std::string &path)
+OBJ::OBJ(const std::string &path)
 {
-    OBJ result;
-
     std::string line;
     std::ifstream file(path);
 
@@ -203,25 +197,86 @@ OBJ loadOBJ(const std::string &path)
 
         if (token == "v")
         {
-            parseV(args, result);
+            parseV(args);
         }
         else if (token == "vt")
         {
-            parseVT(args, result);
+            parseVT(args);
         }
         else if (token == "vn")
         {
-            parseVN(args, result);
+            parseVN(args);
         }
         else if (token == "f")
         {
-            parseF(args, result);
+            parseF(args);
         }
         else
         {
             std::cout << "(parse) Warning: Skipping unhandled token " << token << '\n';
         }
     }
+}
+
+/*
+ * Other
+ */
+
+std::pair<std::vector<Vertex>, std::vector<GLuint>> OBJ::getVerticesIndices() const
+{
+    // Because OBJ face elements and vertex/texcoord/normal triplets are not guaranteed to have a
+    // one-to-one mapping new vertex/texcoord/normal triplets might need to be generated.
+    std::map<Vertex, GLuint> vertexToIndex;
+    std::vector<Vertex> vertices;
+    std::vector<GLuint> indices;
+
+    for (const auto &face : m_f)
+    {
+        if (face.size() != 3)
+            throw std::runtime_error("Can not parse non-triangular face.");
+
+        for (const auto &f : face)
+        {
+            // OBJ have 1-based array indices.
+            int vIdx = f.v - 1;
+            int vnIdx = f.vn - 1;
+            int vtIdx = f.vt - 1;
+            glm::vec3 v = m_v[vIdx];
+            glm::vec3 vn{0};
+            if (vnIdx != -1)
+                vn = m_vn[vnIdx];
+            glm::vec2 vt{0};
+            if (vtIdx != -1)
+                vt = m_vt[vtIdx];
+
+            Vertex vertex{
+                {v[0], v[1], v[2]},
+                {vn[0], vn[1], vn[2]},
+                {0, 0, 0, 0}, // No colors
+                {vt[0], vt[1]}};
+
+            if (!vertexToIndex.count(vertex)) // New vertex
+            {
+                vertexToIndex[vertex] = vertices.size();
+                indices.push_back(vertices.size());
+                vertices.push_back(vertex);
+            }
+            else
+            {
+                indices.push_back(vertexToIndex[vertex]);
+            }
+        }
+    }
+
+    return std::make_pair(std::move(vertices), std::move(indices));
+}
+
+std::vector<glm::vec3> OBJ::getVertices() const
+{
+    auto pair = getVerticesIndices();
+    std::vector<glm::vec3> result;
+    for (const Vertex &v : pair.first)
+        result.emplace_back(v.position[0], v.position[1], v.position[2]);
 
     return result;
 }

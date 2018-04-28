@@ -6,21 +6,19 @@
 
 class VertexArray
 {
-  GLuint m_id;
-  GLuint m_vertexBufferId;
-  GLuint m_indexBufferId;
-  GLsizei m_vertexCount;
-  GLsizei m_indexCount;
+    GLuint m_id;
+    GLuint m_vertexBufferId;
+    GLuint m_indexBufferId;
+    GLsizei m_vertexCount;
+    GLsizei m_indexCount;
 
-public:
-  VertexArray(const std::vector<Vertex> &vertices);
-  VertexArray(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices);
-  VertexArray(const VertexArray &) = delete;
-  VertexArray(VertexArray &&) = delete;
-  ~VertexArray();
+  public:
+    VertexArray(const std::vector<Vertex> &vertices);
+    VertexArray(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices);
 
-  GLsizei getVertexCount() const { return m_vertexCount; }
-  GLsizei getIndexCount() const { return m_indexCount; }
+    GLsizei getVertexCount() const { return m_vertexCount; }
+    GLsizei getIndexCount() const { return m_indexCount; }
 
-  void bind() const { glBindVertexArray(m_id); }
+    void bind() const { glBindVertexArray(m_id); }
+    void destroy();
 };

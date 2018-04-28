@@ -1,12 +1,13 @@
 #include "Heightmap.hpp"
 
-
-HeightMap::HeightMap(int width, int height,
+Heightmap::Heightmap(int width, int height,
                      const std::vector<unsigned char> &data, int stride,
-                     const std::shared_ptr<Shader> &shader,
-                     const std::shared_ptr<Texture> &texture)
-    : m_width{width}, m_height{height}
+                     const std::string &shader,
+                     const std::string &texture)
+    : m_width(width), m_height(height), m_shader(shader), m_texture(texture)
 {
+    m_quadWidth = 2;
+    m_quadHeight = 2;
     int quadWidth = 2;
     int quadHeight = 2;
     int scaleHeight = 5;
@@ -90,7 +91,46 @@ HeightMap::HeightMap(int width, int height,
             indices[(x + z * (width - 1)) * 6 + 5] = x + 1 + (z + 1) * width;
         }
     }
+    m_vertices = std::move(vertices);
+    m_indices = std::move(indices);
+}
 
-    auto vertexArray = std::make_shared<VertexArray>(vertices, indices);
-    m_mesh = {shader, texture, vertexArray};
+Heightmap::Heightmap(const TGA &tga, const std::string &shader, const std::string &texture)
+    : Heightmap(tga.width, tga.height, tga.imageData, tga.bytesPerPixel, shader, texture)
+{
+}
+
+float Heightmap::getY(float x, float z) const
+{
+    // Quad coordinates
+    int q_x = static_cast<int>(x) / m_quadWidth;
+    int q_z = static_cast<int>(z) / m_quadHeight;
+
+    // Outside
+    if (q_x >= m_width - 1 || q_z >= m_height - 1 || x < 0 || z < 0)
+        return 0;
+
+    const auto &p1 = m_vertices[(q_x + 0) + (q_z + 0) * m_width].position;
+    const auto &p2 = m_vertices[(q_x + 1) + (q_z + 1) * m_width].position;
+    glm::vec3 v1 = {p1[0], p1[1], p1[2]}; // Quad top left position
+    glm::vec3 v2 = {p2[0], p2[1], p2[2]}; // Quad bottom right position
+
+    // Pick triangle
+    int q_px = static_cast<int>(x) % m_quadWidth;
+    int q_pz = static_cast<int>(z) % m_quadHeight;
+    int i = q_px > q_pz ? 1 : 0;
+    const auto &p3 = i == 1
+                         ? m_vertices[(q_x + 1) + (q_z + 0) * m_width].position  // Quad top right corner
+                         : m_vertices[(q_x + 0) + (q_z + 1) * m_width].position; // Quad bottom left corner
+    glm::vec3 v3 = {p3[0], p3[1], p3[2]};
+    
+    // Calculate normal
+    glm::vec3 e1 = v1 - v2;
+    glm::vec3 e2 = v1 - v3;
+    glm::vec3 n = glm::normalize(glm::cross(e1, e2));
+    if (n.y < 0) // If normal points downward, flip
+        n *= -1;
+
+    // Use the plain equation to find y
+    return (n.x * (v1.x - x) + n.y * v1.y + n.z * (v1.z - z)) / n.y;    
 }

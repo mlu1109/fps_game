@@ -31,6 +31,7 @@ class Camera
     Camera();
 
     void setPosition(const glm::vec3 &p) { m_p = p;}
+    void setY(float y) { m_p.y = y; }
     
     const glm::vec3 &getPosition() const { return m_p; }
     const glm::mat4 &getViewScreen() const { return m_viewScreen; }

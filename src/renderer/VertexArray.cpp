@@ -10,7 +10,7 @@ VertexArray::VertexArray(const std::vector<Vertex> &vertices)
 
     // Members
     // (not initalized in mem-list to keep consistency with the delegating constructor)
-    m_vertexCount = vertices.size(); //
+    m_vertexCount = vertices.size();
     m_indexCount = 0;
 
     // VertexBuffer
@@ -38,7 +38,7 @@ VertexArray::VertexArray(const std::vector<Vertex> &vertices)
 }
 
 VertexArray::VertexArray(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices)
-    : VertexArray{vertices}
+    : VertexArray(vertices)
 {
     /* NOTE: Assumes that the delegated constructor has created and bound the VertexArray at this point */
 
@@ -53,7 +53,7 @@ VertexArray::VertexArray(const std::vector<Vertex> &vertices, const std::vector<
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufSize, indices.data(), GL_STATIC_DRAW);
 }
 
-VertexArray::~VertexArray()
+void VertexArray::destroy()
 {
     glDeleteBuffers(1, &m_vertexBufferId);
     glDeleteBuffers(1, &m_indexBufferId);

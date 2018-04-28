@@ -1,22 +1,16 @@
 #include <glm/gtx/norm.hpp>
+#include <vector>
 #include "BoundingBoxAA.hpp"
 #include "BoundingSphere.hpp"
-#include "Utility.hpp"
 
-
-BoundingSphere::BoundingSphere(const glm::vec3 &center, float radius)
-    : m_center(center), m_radius(radius) {}
+BoundingSphere::BoundingSphere(const Transform &boundedTransform, const glm::vec3 &center, float radius)
+    : BoundingVolume(boundedTransform), m_center_0(center), m_radius_0(radius) {}
 
 // Ritter's Bounding Sphere
 // Reference: https://www.researchgate.net/publication/242453691_An_Efficient_Bounding_Sphere
-BoundingSphere::BoundingSphere(const OBJ &obj)
+BoundingSphere::BoundingSphere(const Transform &boundedTransform, const std::vector<glm::vec3> &vertices)
+    : BoundingVolume(boundedTransform)
 {
-    // Get vertices from model
-    auto vertexData = getVertexDataFromOBJ(obj);
-    std::vector<glm::vec3> vertices;
-    for (const auto &v : vertexData.first)
-        vertices.push_back(glm::vec3{v.position[0], v.position[1], v.position[2]});
-
     // Find six points where min_x has the smallest x-component, min_y has the smallest y-component and so forth
     std::array<glm::vec3, 6> points; // [min_x, min_y, min_z, max_x, max_y, max_z]
     std::fill(points.begin(), points.end(), vertices[0]);
@@ -61,26 +55,17 @@ BoundingSphere::BoundingSphere(const OBJ &obj)
         center = (radius * center + (_radius - radius) * v) / _radius;
     }
 
-    m_center = center;
-    m_radius = radius;
+    m_center_0 = center;
+    m_radius_0 = radius;
 }
 
-glm::vec3 BoundingSphere::getScale() const
+void BoundingSphere::update()
 {
-    return glm::vec3(m_radius, m_radius, m_radius);
-}
-
-BoundingSphere BoundingSphere::getTransformed(const Transform &t) const
-{
+    const Transform& t = m_boundedTransform;
     float maxScale = std::max(t.S.x, std::max(t.S.y, t.S.z));
-    float radius = m_radius * maxScale;
-    glm::vec3 center = m_center + t.T;
-    return BoundingSphere(center, radius);
-}
-
-Transform BoundingSphere::getTransform() const
-{
-    return Transform{getCenter(), {0, 0, 0}, getScale()};
+    m_radius = m_radius_0 * maxScale;
+    m_center = m_center_0 + t.T;
+    m_modelWorld = glm::translate(m_center) * glm::scale(glm::vec3(m_radius, m_radius, m_radius));
 }
 
 bool BoundingSphere::isIntersecting(const BoundingVolume &other) const
