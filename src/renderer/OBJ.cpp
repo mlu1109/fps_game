@@ -126,7 +126,7 @@ FaceElement parseTriplet(const std::string &args)
         fe.vt = 0;            // .obj files have 1-based array indices.
     else
         fe.vt = std::stoi(std::string(delim1 + 1, delim2));
-    if (delim2 == args.end() - 1) // v/vt/
+    if (delim2 == args.end()) // v/vt
         fe.vn = 0;                // .obj files have 1-based array indices.
     else
         fe.vn = std::stoi(std::string(delim2 + 1, args.end()));
