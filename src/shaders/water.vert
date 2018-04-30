@@ -1,7 +1,6 @@
 #version 130
 #extension GL_ARB_explicit_attrib_location: enable
 #extension GL_ARB_explicit_uniform_location: enable
-#extension GL_ARB_gpu_shader5 : enable
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inNormal;
@@ -27,10 +26,10 @@ void main(void)
     position.y = y(position.x, position.z);    
     // TODO: Recalculate normal
     vec3 normal = inNormal;
-    // Reflection (Reference: Polygon Feel No Pain p. 149)
+    // Reflection (Reference: Polygons Feel No Pain p. 149)
     vec3 posInViewCoord = vec3(worldView * modelWorld * vec4(position, 1.0));
     vec3 viewDirectionInViewCoord = normalize(posInViewCoord);
-    vec3 viewDirectionInWorldCoord = inverse(mat3(worldView)) * viewDirectionInViewCoord;
+    vec3 viewDirectionInWorldCoord = transpose(mat3(worldView)) * viewDirectionInViewCoord;
     vec3 worldNormal = mat3(modelWorld) * normal;
     reflectedView = reflect(viewDirectionInWorldCoord, normalize(worldNormal));
     // Refraction
