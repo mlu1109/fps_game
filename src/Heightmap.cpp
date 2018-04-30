@@ -6,10 +6,10 @@ Heightmap::Heightmap(int width, int height,
                      const std::string &texture)
     : m_width(width), m_height(height), m_shader(shader), m_texture(texture)
 {
-    m_quadWidth = 2;
-    m_quadHeight = 2;
-    int quadWidth = 2;
-    int quadHeight = 2;
+    m_quadWidth = 4;
+    m_quadHeight = 4;
+    int quadWidth = m_quadWidth;
+    int quadHeight = m_quadHeight;
     int scaleHeight = 5;
     int vertexCount = width * height;
     int triangleCount = (width - 1) * (height - 1) * 2; // quads * 2

@@ -23,6 +23,11 @@ class Heightmap : public Drawable
   public:
     Heightmap(int width, int height, const std::vector<unsigned char> &data, int stride, const std::string &shader, const std::string &texture);
     Heightmap(const TGA &tga, const std::string &shader, const std::string &texture);
+    
+    int getWidth() const { return m_width * m_quadWidth; }
+    int getHeight() const { return m_height * m_quadHeight; }
+    glm::vec3 getCenter() const { return glm::vec3{static_cast<float>(getWidth()) / 2, 0, static_cast<float>(getHeight()) / 2}; }
+    
     // Drawable
     const std::string &getShader() const override { return m_shader; }
     const std::string &getTexture() const override { return m_texture; }

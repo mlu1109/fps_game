@@ -29,6 +29,22 @@ void Renderer::pre()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void Renderer::renderCubemap(const std::string &shader, const std::string &cubemap, const std::string &vertexArray, const glm::mat4 &modelWorld)
+{
+    setShader(shader);
+    glUniformMatrix4fv(UNIFORM_MODEL_TO_WORLD, 1, GL_FALSE, &modelWorld[0][0]);
+    m_resourceManager.getCubemap(cubemap).bind();
+    const VertexArray &va = m_resourceManager.getVertexArray(vertexArray);
+    va.bind();
+
+    GLsizei indexCount = va.getIndexCount();
+    if (indexCount > 0)
+        glDrawElements(m_primitive, indexCount, GL_UNSIGNED_INT, 0);
+    else
+        glDrawArrays(m_primitive, 0, va.getVertexCount());
+    glEnable(GL_DEPTH_TEST);
+}
+
 void Renderer::renderSkybox(const std::string &shader, const std::string &cubemap, const std::string &vertexArray)
 {
     glDisable(GL_DEPTH_TEST);

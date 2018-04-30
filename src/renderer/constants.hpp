@@ -19,3 +19,5 @@ const GLuint UNIFORM_VIEW_TO_SCREEN = 2;
 const GLuint UNIFORM_NORMAL = 3;
 const GLuint UNIFORM_TEXTURE_UNIT = 4;
 const GLuint UNIFORM_COLOR = 5;
+const GLuint UNIFORM_CAMERA_POSITION = 6;
+const GLuint UNIFORM_TIME = 7;

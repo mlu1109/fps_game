@@ -5,7 +5,7 @@
 
 void handleKeyInput(GLFWwindow *window, Camera &camera)
 {
-    const float speed = 0.2;
+    const float speed = 0.4;
     glm::vec3 translate{0};
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.moveD(-speed);

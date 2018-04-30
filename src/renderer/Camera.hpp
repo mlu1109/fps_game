@@ -20,7 +20,7 @@ class Camera
     float m_fovy = M_PI / 4.0f;
     float m_aspect = 4.0f / 3.0f;
     float m_near = 0.1f;
-    float m_far = 200.0f;
+    float m_far = 1000.0f;
 
     void updateDirection();
     void updatePosition();
@@ -30,8 +30,11 @@ class Camera
   public:
     Camera();
 
-    void setPosition(const glm::vec3 &p) { m_p = p;}
-    void setY(float y) { m_p.y = y; }
+    float getX() const { return m_p.x; }
+    float getZ() const { return m_p.z; }
+
+    void setPosition(const glm::vec3 &p) { m_p = p; updateWorldView();}
+    void setY(float y) { m_p.y = y; updateWorldView(); }
     
     const glm::vec3 &getPosition() const { return m_p; }
     const glm::mat4 &getViewScreen() const { return m_viewScreen; }
