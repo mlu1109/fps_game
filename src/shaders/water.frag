@@ -5,10 +5,12 @@
 
 in vec3 reflectedView; 
 in vec3 refractedView;
+in vec3 position;
 
 out vec4 outColor;
 
 layout(location = 4) uniform samplerCube texUnit;
+layout(location = 7) uniform float time;
 
 void main()
 {
@@ -16,5 +18,6 @@ void main()
     float refraction = 0.4;
     outColor = texture(texUnit, normalize(reflectedView)) * reflection + texture(texUnit, normalize(refractedView)) * refraction;    
     outColor.g *= 1.1;
-    outColor.a = 0.9;
+    outColor *= clamp(position.y, 0.98, 1);
+    outColor.a = 0.8;
 }

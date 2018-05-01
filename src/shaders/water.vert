@@ -13,6 +13,7 @@ layout(location = 7) uniform float time;
 
 out vec3 reflectedView;
 out vec3 refractedView;
+out vec3 position;
 
 float y(float x, float z)
 {
@@ -22,8 +23,10 @@ float y(float x, float z)
 void main(void)
 {
     // Simple motion
-    vec3 position = inPosition;
-    position.y = y(position.x, position.z);    
+    position = inPosition;
+    position.y = y(position.x, position.z);
+    position.z += cos(time/2) * 0.005;
+    position.x += sin(time/2) * 0.005;
     // TODO: Recalculate normal
     vec3 normal = inNormal;
     // Reflection (Reference: Polygons Feel No Pain p. 149)
