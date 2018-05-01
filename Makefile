@@ -15,7 +15,7 @@ dep = $(obj:.o=.d)
 # --------
 CC = g++
 LDFLAGS = -lGL -lglfw -lGLEW
-CFLAGS = -Wall -Wextra -g -std=c++14
+CFLAGS = -Wall -Wextra -g -std=c++17
 
 # Rules
 # -----
