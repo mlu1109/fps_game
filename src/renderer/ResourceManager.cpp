@@ -3,6 +3,7 @@
 const std::string SHADER_DIR = "src/shaders/";
 const std::string TEXTURE_DIR = "assets/textures/";
 const std::string MODEL_DIR = "assets/models/";
+const std::string CUBEMAP_DIR = "assets/cubemaps/";
 
 ResourceManager::~ResourceManager()
 {
@@ -42,7 +43,7 @@ std::string ResourceManager::loadTextureCubemap(const std::string &tgaPath)
 
     std::array<TGA, 6> tgas;
     for (int i = 0; i < 6; ++i)
-        tgas[i] = loadTGA(paths[i]);
+        tgas[i] = loadTGA(CUBEMAP_DIR + paths[i]);
 
     std::array<GLenum, 6> sideTargets = {
         GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
