@@ -14,9 +14,9 @@ class BoundingSphere : public BoundingVolume
     glm::vec3 m_center;
     float m_radius;
     // Drawable
-    const std::string m_shader = "color_solid";
-    const std::string m_texture = "";
-    const std::string m_vertexArray = "sphere.obj";
+    std::string m_shader = "color_solid";
+    std::string m_texture = "";
+    std::string m_vertexArray = "sphere.obj";
     glm::mat4 m_modelWorld;
   
   public:
@@ -37,6 +37,7 @@ class BoundingSphere : public BoundingVolume
     bool isIntersecting(const BoundingVolume &) const override;
     bool isIntersecting(const AABB &) const override;
     bool isIntersecting(const BoundingSphere &) const override;
-    // Drawable
+    bool isIntersecting(const Ray&) const override;
+    bool hasPoint(const glm::vec3 &) const override;
 
 };

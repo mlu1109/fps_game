@@ -10,6 +10,7 @@
 #include "renderer/Camera.hpp"
 #include "renderer/Renderer.hpp"
 #include "glm/print.hpp"
+#include "Game.hpp"
 #include <cmath>
 
 GLFWwindow *initWindow()
@@ -42,58 +43,65 @@ GLFWwindow *initWindow()
     return window;
 }
 
-const std::string SHADER_DIR = "src/shaders/";
 const std::string TEXTURE_DIR = "assets/textures/";
 const std::string MODEL_DIR = "assets/models/";
 const std::string HEIGHTMAP_DIR = "assets/heightmaps/";
 const std::string CUBEMAP_DIR = "assets/cubemaps/";
-
-Model *picked = nullptr;
 
 int main()
 {
     GLFWwindow *window = initWindow();
     Camera camera;
     Renderer renderer{window, &camera};
+    Game game;
     // Input
-    Mouse mouse(&camera);
+    Mouse mouse(&camera, &game);
     initCallbacks(window, &mouse, &camera);
+
     // Resources
-    const std::string modelPlane = "grid.obj";
-    const std::string modelPath = "cube.obj";
-    renderer.loadShader("color_normal");
-    renderer.loadShader("color_solid");
-    renderer.loadShader("plain_texture");
-    renderer.loadShader("terrain");
-    renderer.loadVertexArray("sphere.obj");
-    renderer.loadVertexArray("cube.obj");
-    renderer.loadVertexArray(modelPath);
-    auto missingTex = renderer.loadTexture("terrain50.tga");
-    OBJ objModel = OBJ(MODEL_DIR + modelPath);
-    Model model0(objModel.getVertices(), "color_normal", "", modelPath);
-    Model model1(objModel.getVertices(), "color_normal", "", modelPath);
+    // --------------------------------------------------
+    // Shaders
+    auto shaderColorNormal = renderer.loadShader("color_normal");
+    auto shaderColorSolid = renderer.loadShader("color_solid");
+    auto shaderPlainTexture = renderer.loadShader("plain_texture");
+    auto shaderSkybox = renderer.loadShader("skybox");
+    auto shaderTerrain = renderer.loadShader("terrain");
+    auto shaderWater = renderer.loadShader("water");
+    // VertexArrays
+    auto vaCubeId = renderer.loadVertexArray("cube.obj");
+    auto vaLowPolyBush = renderer.loadVertexArray("Follage_Pack/OBJ Files/Low_Poly_Bush_001.obj");
+    auto vaLowPolyTree = renderer.loadVertexArray("Follage_Pack/OBJ Files/Low_Poly_Tree_003.obj");
+    auto vaSkybox = renderer.loadVertexArray("skybox.obj");
+    auto vaSphere = renderer.loadVertexArray("sphere.obj");
+    auto vaWater = renderer.loadVertexArray("grid.obj");
+    // Objects (needed for bounding box calculations)
+    auto objWater = OBJ(MODEL_DIR + vaWater);
+    auto objLowPolyBush = OBJ(MODEL_DIR + vaLowPolyBush);
+    auto objLowPolyTree = OBJ(MODEL_DIR + vaLowPolyTree);
+    // Textures
+    auto texSkybox = renderer.loadTextureCubemap("hw_desertnight/desert_night");
+    auto texTerrainId = renderer.loadTexture("terrain50.tga");
+    auto texWater = texSkybox;
 
-    // Terrain
+    // Terrain (crappy design)
     TGA tgaHeightmap = loadTGA(HEIGHTMAP_DIR + "fft-terrain.tga");
-    Heightmap heightmap(tgaHeightmap, "terrain", missingTex);
-    renderer.loadVertexArray("fft-terrain", heightmap.getVertices(), heightmap.getIndices());
-    heightmap.setVertexArray("fft-terrain");
+    Heightmap terrain(tgaHeightmap, shaderTerrain, texTerrainId);
+    auto vaTerrainId = renderer.loadVertexArray("fft-terrain.tga", terrain.getVertices(), terrain.getIndices());
+    terrain.setVertexArray(vaTerrainId);
 
+    // Models
+    // --------------------------------------------------
+    // Water
+    Model modelWater(objWater.getVertices(), shaderWater, texWater, vaWater);
     // Vegetation
-
-    std::vector<Model> vegetation;
-    auto lowPolyBush = renderer.loadVertexArray("Follage_Pack/OBJ Files/Low_Poly_Bush_001.obj");
-    auto lowPolyTree = renderer.loadVertexArray("Follage_Pack/OBJ Files/Low_Poly_Tree_003.obj");
-    objModel = OBJ(MODEL_DIR + lowPolyTree);
-    Model vegetationTree(objModel.getVertices(), "color_normal", "", lowPolyTree);
-    objModel = OBJ(MODEL_DIR + lowPolyBush);
-    Model vegetationBush(objModel.getVertices(), "color_normal", "", lowPolyBush);
+    Model vegetationBush(objLowPolyBush.getVertices(), "color_normal", "", vaLowPolyBush);
+    Model vegetationTree(objLowPolyTree.getVertices(), "color_normal", "", vaLowPolyTree);
 
     for (int i = 0; i < 1000; ++i)
     {
-        float x = rand() % heightmap.getWidth();
-        float z = rand() % heightmap.getHeight();
-        float y = heightmap.getY(x, z);
+        float x = rand() % terrain.getWidth();
+        float z = rand() % terrain.getHeight();
+        float y = terrain.getY(x, z);
         if (y < 13)
             continue;
         if (i % 2 == 0)
@@ -101,77 +109,66 @@ int main()
             vegetationTree.setTranslate({x, y, z});
             vegetationTree.setRotate({0, 0, rand()});
             vegetationTree.update();
-            vegetation.push_back(vegetationTree);
+            game.addStaticObject(vegetationTree);
         }
         else
         {
             vegetationBush.setTranslate({x, y, z});
             vegetationBush.update();
-            vegetation.push_back(vegetationBush);
+            game.addStaticObject(vegetationBush);
         }
     }
-
-    // Skybox
-    auto skyboxShader = renderer.loadShader("skybox");
-    auto skyboxTex = renderer.loadTextureCubemap(CUBEMAP_DIR + "hw_desertnight/desert_night");
-    auto skyboxVA = renderer.loadVertexArray("skybox.obj");
-
-    // Water
-    auto waterShader = renderer.loadShader("water");
-    auto waterTex = skyboxTex;
-    auto waterVA = renderer.loadVertexArray("grid.obj");
-    auto waterOBJ = OBJ(MODEL_DIR + waterVA);
-    Model modelWater(waterOBJ.getVertices(), waterShader, waterTex, waterVA);
 
     double t0 = glfwGetTime();
     int frameCount = 0;
 
-    modelWater.scale({heightmap.getWidth(), 0, heightmap.getHeight()});
-    modelWater.translate(heightmap.getCenter());
+    modelWater.scale({terrain.getWidth(), 0, terrain.getHeight()});
+    modelWater.translate(terrain.getCenter());
     modelWater.translate({0, 12, 0});
     modelWater.update();
-    camera.setPosition({heightmap.getWidth() / 4, 0, heightmap.getHeight() / 4});
-    model0.update();
-
-    model1.update();
+    camera.setPosition({terrain.getWidth() / 4, 0, terrain.getHeight() / 4});
     while (!glfwWindowShouldClose(window))
     {
-        camera.setY(heightmap.getY(camera.getX(), camera.getZ()) + 5);
+        camera.setY(terrain.getY(camera.getX(), camera.getZ()) + 5);
         glfwPollEvents();
         handleKeyInput(window, camera);
+
+        // Render
+        // --------------------------------------------------
         renderer.pre();
-        renderer.renderSkybox(skyboxShader, skyboxTex, skyboxVA);
-        renderer.render(heightmap);
-        for (const auto &v : vegetation)
-        {
-            renderer.render(v);
-        }
+
+        // Skybox, terrain
+        renderer.renderSkybox(shaderSkybox, texSkybox, vaSkybox);
+        renderer.render(terrain);
+        // Static objects
+        for (const auto &o : game.getStaticObjects())
+            renderer.render(o);
+        
+        // Water
         renderer.enableBlend();
-        //renderer.enableWireframe();
-        renderer.renderCubemap(modelWater);
+        renderer.setShader(shaderWater);
         renderer.setUniformTime(glfwGetTime());
-        //renderer.disableWireframe();
-        for (const auto &v : vegetation)
+        renderer.renderCubemap(modelWater);
+        renderer.disableBlend();
+        // Bounding volumes
+        renderer.enableBlend();
+        for (const auto &o : game.getStaticObjects())
         {
             renderer.setShader("color_solid");
-            if (&v == picked)
+            if (&o == game.getPicked())
                 renderer.setUniformColor(255, 255, 255, 125);
             else
                 renderer.setUniformColor(0, 200, 20, 25);
 
-            auto &bs = v.getBoundingSphere();
-            renderer.render(bs);
-            renderer.render(v.getAABB());
+            renderer.render(o.getBoundingSphere());
+            renderer.render(o.getAABB());
         }
         renderer.disableBlend();
+
         renderer.post();
-        //model0.translate({0.003, 0.003, 0.003});
-        //model0.rotate({0.001, 0.001, 0.001});
-        //model0.scale({0.002, 0.002, 0.002});
-        model0.update();
-        model1.translate({-0.003, -0.003, -0.003});
-        model1.rotate({0.01, 0.01, 0.01});
-        model1.update();
+
+        // Print FPS
+        // --------------------------------------------------
         ++frameCount;
         double t1 = glfwGetTime();
         if (t1 - t0 >= 1)

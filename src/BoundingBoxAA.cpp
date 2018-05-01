@@ -4,10 +4,10 @@
 #include "BoundingBoxAA.hpp"
 #include "BoundingSphere.hpp"
 
-AABB::AABB(const Transform& boundedTransform, const glm::vec3 &min, const glm::vec3 &max)
+AABB::AABB(const Transform &boundedTransform, const glm::vec3 &min, const glm::vec3 &max)
     : BoundingVolume(boundedTransform), m_min_0(min), m_max_0(max) {}
 
-AABB::AABB(const Transform& boundedTransform, const std::vector<glm::vec3> &vertices)
+AABB::AABB(const Transform &boundedTransform, const std::vector<glm::vec3> &vertices)
     : BoundingVolume(boundedTransform)
 {
     // Calculate extremes
@@ -39,7 +39,7 @@ glm::vec3 AABB::getScale() const
 
 void AABB::update()
 {
-    const Transform &t = m_boundedTransform;
+    const Transform &t = *m_boundedTransform;
     // Rotate vertices according to bounded transform
     glm::mat3 rotMat = glm::orientate3(t.R);
     std::array<glm::vec3, 8> vertices{
@@ -71,7 +71,7 @@ void AABB::update()
     glm::mat4 transform = glm::translate(t.T) * glm::scale(t.S);
     m_min = transform * glm::vec4(min, 1.0);
     m_max = transform * glm::vec4(max, 1.0);
-    
+
     m_modelWorld = glm::translate(getCenter()) * glm::scale(getScale());
 }
 
@@ -110,9 +110,21 @@ bool AABB::isIntersecting(const BoundingSphere &other) const
         else
             a_closest[i] = b_center[i];
     }
-    
+
     float distance2 = glm::distance2(a_closest, b_center);
     float radius2 = other.getRadius() * other.getRadius();
-    
+
     return distance2 <= radius2;
+}
+
+bool AABB::isIntersecting(const Ray &) const
+{
+    return false;
+}
+
+bool AABB::hasPoint(const glm::vec3 &point) const
+{
+    return !(m_max.x < point.x || point.x < m_min.x ||
+             m_max.y < point.y || point.y < m_min.y ||
+             m_max.z < point.z || point.z < m_min.z);
 }

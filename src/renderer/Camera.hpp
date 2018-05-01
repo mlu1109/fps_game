@@ -37,6 +37,7 @@ class Camera
     void setY(float y) { m_p.y = y; updateWorldView(); }
     
     const glm::vec3 &getPosition() const { return m_p; }
+    const glm::vec3 &getDirection() const { return m_d; }
     const glm::mat4 &getViewScreen() const { return m_viewScreen; }
     const glm::mat4 &getWorldView() const { return m_worldView; }
 

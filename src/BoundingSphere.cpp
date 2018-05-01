@@ -61,7 +61,7 @@ BoundingSphere::BoundingSphere(const Transform &boundedTransform, const std::vec
 
 void BoundingSphere::update()
 {
-    const Transform& t = m_boundedTransform;
+    const Transform& t = *m_boundedTransform;
     float maxScale = std::max(t.S.x, std::max(t.S.y, t.S.z));
     m_radius = m_radius_0 * maxScale;
     m_center = m_center_0 + t.T;
@@ -82,4 +82,17 @@ bool BoundingSphere::isIntersecting(const BoundingSphere &other) const
 {
     float radius2 = (m_radius + other.m_radius) * (m_radius + other.m_radius);
     return glm::distance2(m_center, other.m_center) < radius2;
+}
+
+bool BoundingSphere::isIntersecting(const Ray &ray) const
+{
+    float t = glm::distance(m_center, ray.origin);
+    glm::vec3 d = ray.direction * t;
+    return glm::distance(ray.origin + d, m_center) < m_radius;
+}
+
+bool BoundingSphere::hasPoint(const glm::vec3 &point) const
+{
+    float radius2 = m_radius * m_radius;
+    return glm::distance2(point, m_center) < radius2;
 }

@@ -4,7 +4,6 @@
 #include <vector>
 #include "BoundingVolume.hpp"
 
-
 class AABB : public BoundingVolume
 {
     // The bounding box without any transformations applied
@@ -14,9 +13,9 @@ class AABB : public BoundingVolume
     glm::vec3 m_min;
     glm::vec3 m_max;
     // Drawable
-    const std::string m_shader = "color_solid";
-    const std::string m_texture = "";
-    const std::string m_vertexArray = "cube.obj";
+    std::string m_shader = "color_solid";
+    std::string m_texture = "";
+    std::string m_vertexArray = "cube.obj";
     glm::mat4 m_modelWorld;
 
   public:
@@ -37,8 +36,9 @@ class AABB : public BoundingVolume
     glm::vec3 getScale() const;
 
     // BoundingVolume
-    bool isIntersecting(const BoundingVolume&) const override;
-    bool isIntersecting(const AABB&) const override;
-    bool isIntersecting(const BoundingSphere&) const override;
-
+    bool isIntersecting(const BoundingVolume &) const override;
+    bool isIntersecting(const AABB &) const override;
+    bool isIntersecting(const BoundingSphere &) const override;
+    bool isIntersecting(const Ray &) const override;
+    bool hasPoint(const glm::vec3 &) const;
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <algorithm>
 #include "BoundingSphere.hpp"
 #include "BoundingBoxAA.hpp"
 #include "Transform.hpp"
@@ -22,7 +23,7 @@ class Model : public Drawable
   public:
     Model(const std::vector<glm::vec3> vertices, const std::string &shader, const std::string &texture, const std::string &vertexArray)
         : m_boundingSphere(m_transform, vertices), m_aabb(m_transform, vertices),
-          m_shader(shader), m_texture(texture), m_vertexArray(vertexArray) {}
+          m_shader(shader), m_texture(texture), m_vertexArray(vertexArray) { update(); }
 
     const Transform &getTransform() const { return m_transform; }
     // Drawable
@@ -31,6 +32,7 @@ class Model : public Drawable
     const std::string &getVertexArray() const override { return m_vertexArray; }
     const glm::mat4 &getModelWorld() const override { return m_modelWorld; }
 
+    void setTransform(const Transform &t) { m_transform = t; }
     void setTranslate(const glm::vec3 &v) { m_transform.T = v; }
     void setRotate(const glm::vec3 &v) { m_transform.R = v; }
     void setScale(const glm::vec3 &v) { m_transform.S = v; }
