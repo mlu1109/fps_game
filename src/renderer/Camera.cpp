@@ -1,4 +1,3 @@
-#include <glm/gtx/transform.hpp>
 #include "../glm/print.hpp"
 #include "Camera.hpp"
 #include "constants.hpp"

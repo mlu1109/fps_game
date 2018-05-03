@@ -1,7 +1,6 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <glm/gtx/transform.hpp>
 #include "renderer/Drawable.hpp"
 #include "renderer/TGA.hpp"
 #include "renderer/Vertex.hpp"
@@ -20,7 +19,7 @@ class Heightmap : public Drawable
     std::vector<Vertex> m_vertices;
     std::vector<GLuint> m_indices;
 
-    glm::mat4 m_modelView{};
+    glm::mat4 m_modelView{1.0f};
 
   public:
     Heightmap(int width, int height, const std::vector<unsigned char> &data, int stride, const std::string &shader, const std::string &texture);

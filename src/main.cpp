@@ -107,7 +107,7 @@ int main()
         if (i % 2 == 0)
         {
             vegetationTree.setTranslate({x, y, z});
-            vegetationTree.setRotate({0, 0, rand()});
+            vegetationTree.setRotate({0, rand(), 0});
             vegetationTree.update();
             game.addStaticObject(vegetationTree);
         }

@@ -1,4 +1,3 @@
-#include <glm/gtx/norm.hpp>
 #include <vector>
 #include "BoundingBoxAA.hpp"
 #include "BoundingSphere.hpp"
@@ -32,7 +31,7 @@ BoundingSphere::BoundingSphere(const Transform &boundedTransform, const std::vec
         for (size_t j = i + 1; j < points.size(); ++j)
         {
             glm::vec3 _b = points[j];
-            if (glm::distance2(a, b) < glm::distance2(_a, _b))
+            if (glm::distance(a, b) < glm::distance(_a, _b))
             {
                 a = _a;
                 b = _b;
@@ -61,11 +60,12 @@ BoundingSphere::BoundingSphere(const Transform &boundedTransform, const std::vec
 
 void BoundingSphere::update()
 {
-    const Transform& t = *m_boundedTransform;
+    const Transform &t = *m_boundedTransform;
     float maxScale = std::max(t.S.x, std::max(t.S.y, t.S.z));
     m_radius = m_radius_0 * maxScale;
     m_center = m_center_0 + t.T;
-    m_modelWorld = glm::translate(m_center) * glm::scale(glm::vec3(m_radius, m_radius, m_radius));
+    m_modelWorld = glm::translate(glm::mat4(1.0f), m_center) *
+                   glm::scale(glm::mat4(1.0f), glm::vec3(m_radius, m_radius, m_radius));
 }
 
 bool BoundingSphere::isIntersecting(const BoundingVolume &other) const
@@ -80,8 +80,8 @@ bool BoundingSphere::isIntersecting(const AABB &other) const
 
 bool BoundingSphere::isIntersecting(const BoundingSphere &other) const
 {
-    float radius2 = (m_radius + other.m_radius) * (m_radius + other.m_radius);
-    return glm::distance2(m_center, other.m_center) < radius2;
+    float radius = m_radius + other.m_radius;
+    return glm::distance(m_center, other.m_center) < radius;
 }
 
 bool BoundingSphere::isIntersecting(const Ray &ray) const
@@ -93,6 +93,6 @@ bool BoundingSphere::isIntersecting(const Ray &ray) const
 
 bool BoundingSphere::hasPoint(const glm::vec3 &point) const
 {
-    float radius2 = m_radius * m_radius;
-    return glm::distance2(point, m_center) < radius2;
+    float radius2 = m_radius;
+    return glm::distance(point, m_center) < radius2;
 }

@@ -1,6 +1,5 @@
 #include <array>
-#include <glm/gtx/euler_angles.hpp>
-#include <glm/gtx/norm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "BoundingBoxAA.hpp"
 #include "BoundingSphere.hpp"
 
@@ -41,7 +40,9 @@ void AABB::update()
 {
     const Transform &t = *m_boundedTransform;
     // Rotate vertices according to bounded transform
-    glm::mat3 rotMat = glm::orientate3(t.R);
+    glm::mat3 rotMat = glm::rotate(glm::mat4(1.0f), t.R.x, glm::vec3(1.0f, 0.0f, 0.0f)) *
+                       glm::rotate(glm::mat4(1.0f), t.R.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
+                       glm::rotate(glm::mat4(1.0f), t.R.z, glm::vec3(0.0f, 0.0f, 1.0f));
     std::array<glm::vec3, 8> vertices{
         // Bottom
         rotMat * glm::vec3{m_min_0.x, m_min_0.y, m_max_0.z},
@@ -68,11 +69,13 @@ void AABB::update()
         }
 
     // Scale and translate according to bounded transform
-    glm::mat4 transform = glm::translate(t.T) * glm::scale(t.S);
+    glm::mat4 transform = glm::translate(glm::mat4(1.0f), t.T) *
+                          glm::scale(glm::mat4(1.0f), t.S);
     m_min = transform * glm::vec4(min, 1.0);
     m_max = transform * glm::vec4(max, 1.0);
 
-    m_modelWorld = glm::translate(getCenter()) * glm::scale(getScale());
+    m_modelWorld = glm::translate(glm::mat4(1.0f), getCenter()) *
+                   glm::scale(glm::mat4(1.0f), getScale());
 }
 
 bool AABB::isIntersecting(const BoundingVolume &bv) const
@@ -111,10 +114,10 @@ bool AABB::isIntersecting(const BoundingSphere &other) const
             a_closest[i] = b_center[i];
     }
 
-    float distance2 = glm::distance2(a_closest, b_center);
-    float radius2 = other.getRadius() * other.getRadius();
+    float distance = glm::distance(a_closest, b_center);
+    float radius = other.getRadius();
 
-    return distance2 <= radius2;
+    return distance <= radius;
 }
 
 bool AABB::isIntersecting(const Ray &) const
