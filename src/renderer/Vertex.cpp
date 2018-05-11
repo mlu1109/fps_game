@@ -1,5 +1,40 @@
 #include "Vertex.hpp"
 
+bool operator<(const glm::vec3 &lhs, const glm::vec3 &rhs)
+{
+    if (lhs.x < rhs.x)
+        return true;
+    else if (lhs.x > rhs.x)
+        return false;
+
+    if (lhs.y < rhs.y)
+        return true;
+    else if (lhs.y > rhs.y)
+        return false;
+
+    if (lhs.z < rhs.z)
+        return true;
+    else if (lhs.z > rhs.z)
+        return false;
+
+    return false;
+}
+
+bool operator<(const glm::vec2 &lhs, const glm::vec2 &rhs)
+{
+    if (lhs.x < rhs.x)
+        return true;
+    else if (lhs.x > rhs.x)
+        return false;
+
+    if (lhs.y < rhs.y)
+        return true;
+    else if (lhs.x > rhs.y)
+        return false;
+
+    return false;
+}
+
 bool operator<(const Vertex &lhs, const Vertex &rhs)
 {
     if (lhs.position != rhs.position)
@@ -8,8 +43,6 @@ bool operator<(const Vertex &lhs, const Vertex &rhs)
         return lhs.normal < rhs.normal;
     if (lhs.texCoord != rhs.texCoord)
         return lhs.texCoord < rhs.texCoord;
-    if (lhs.color != rhs.color)
-        return lhs.color < rhs.color;
 
     return false; // equal
 }

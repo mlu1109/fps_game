@@ -6,7 +6,7 @@
 
 class Camera
 {
-    glm::vec3 m_p; // Position
+    glm::vec3 m_p{0.0f, 0.0f, 2.0f}; // Position
     glm::vec3 m_r; // Right                 (Unit)
     glm::vec3 m_u; // Up                    (Unit)
     glm::vec3 m_d; // Direction/Forward     (Unit)
@@ -14,7 +14,7 @@ class Camera
     glm::mat4 m_worldView;
     glm::mat4 m_viewScreen;
 
-    float m_angleYaw = 0;
+    float m_angleYaw = -M_PI;
     float m_anglePitch = 0;
 
     float m_fovy = M_PI / 4.0f;

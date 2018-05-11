@@ -1,12 +1,11 @@
 #pragma once
 #include "Transform.hpp"
-#include "renderer/Drawable.hpp"
 #include "Ray.hpp"
 
 class AABB;           // Forward declared
 class BoundingSphere; // Forward declared
 
-class BoundingVolume : public Drawable
+class BoundingVolume
 {
   protected:
     const Transform *m_boundedTransform; // The transform of the enclosed shape

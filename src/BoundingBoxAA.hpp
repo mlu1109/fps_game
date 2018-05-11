@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "BoundingVolume.hpp"
+#include <string>
 
 class AABB : public BoundingVolume
 {

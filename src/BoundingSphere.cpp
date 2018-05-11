@@ -1,4 +1,5 @@
 #include <vector>
+#include <array>
 #include "BoundingBoxAA.hpp"
 #include "BoundingSphere.hpp"
 

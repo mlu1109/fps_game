@@ -20,7 +20,7 @@ void Mouse::castRay(int x, int y, int screenWidth, int screenHeight)
     ray_cam.w = 0.0f;
     glm::vec3 ray_wor = glm::inverse(m_camera->getWorldView()) * ray_cam;
     Ray ray{m_camera->getPosition(), glm::normalize(ray_wor)};
-    m_game->pickByRay(ray);
+    //m_game->pickByRay(ray);
 }
 
 void Mouse::onRelease(GLFWwindow *window, int button)

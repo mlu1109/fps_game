@@ -4,35 +4,33 @@
 #include <string>
 #include <vector>
 #include "Vertex.hpp"
+#include "external/tiny_obj_loader.h"
 
-/* 
- * Specification/Examples:
- * https://en.wikipedia.org/wiki/Wavefront_.obj_file
- * http://www.andrewnoske.com/wiki/OBJ_file_format
- */
-
-struct FaceElement
+struct Material
 {
-    int v = -1;
-    int vt = -1;
-    int vn = -1;
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    float shine;
+};
+
+struct Mesh
+{
+    std::string name;
+    std::vector<GLuint> indices;
+    std::vector<Vertex> vertices;
+    std::vector<Material> materials;
+    std::vector<int> indexMaterialId;
 };
 
 class OBJ
 {
-    std::vector<glm::vec3> m_v;
-    std::vector<glm::vec2> m_vt;
-    std::vector<glm::vec3> m_vn;
-    std::vector<std::vector<FaceElement>> m_f;
-
-    void parseV(const std::string &args);
-    void parseVT(const std::string &args);
-    void parseVN(const std::string &args);
-    void parseF(const std::string &args);
+    std::string m_path;
+    std::vector<Mesh> m_meshes;
 
   public:
     OBJ(const std::string &path);
-    
-    std::pair<std::vector<Vertex>, std::vector<GLuint>> getVerticesIndices() const;
-    std::vector<glm::vec3> getVertices() const;
+
+    const std::string &getPath() const { return m_path; }
+    const std::vector<Mesh> &getMeshes() const { return m_meshes; }
 };

@@ -16,25 +16,25 @@ ResourceManager::~ResourceManager()
     for (auto &p : m_vertexArrays)
         p.second.destroy();
 
-    for (auto &p : m_textureCubemaps)
+    for (auto &p : m_Cubemaps)
         p.second.destroy();
 }
 
-std::string ResourceManager::loadShader(const std::string &name)
+const Shader *ResourceManager::loadShader(const std::string &name)
 {
     m_shaders.emplace(name, Shader(SHADER_DIR + name + ".vert", SHADER_DIR + name + ".frag"));
-    return name;
+    return &m_shaders.at(name);
 }
 
-std::string ResourceManager::loadTexture(const std::string &tgaPath)
+const Texture *ResourceManager::loadTexture(const std::string &tgaPath)
 {
     TGA tga = loadTGA(TEXTURE_DIR + tgaPath);
     GLint internalFormat = tga.bitsPerPixel == 32 ? GL_RGBA : GL_RGB;
     m_textures.emplace(tgaPath, Texture(tga.imageData, internalFormat, tga.width, tga.height));
-    return tgaPath;
+    return &m_textures.at(tgaPath);
 }
 
-std::string ResourceManager::loadTextureCubemap(const std::string &tgaPath)
+const Cubemap *ResourceManager::loadCubemap(const std::string &tgaPath)
 {
     std::array<std::string, 6> paths = {
         tgaPath + "_ft.tga", tgaPath + "_bk.tga",
@@ -50,26 +50,18 @@ std::string ResourceManager::loadTextureCubemap(const std::string &tgaPath)
         GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
         GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_X};
 
-    m_textureCubemaps.emplace(tgaPath, TextureCubemap());
-    TextureCubemap &texture = m_textureCubemaps[tgaPath];
+    m_Cubemaps.emplace(tgaPath, Cubemap());
+    Cubemap &texture = m_Cubemaps.at(tgaPath);
     for (int i = 0; i < 6; ++i)
     {
         GLint internalFormat = tgas[i].bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
         texture.loadSide(sideTargets[i], tgas[i].imageData, internalFormat, tgas[i].width, tgas[i].height);
     }
-    return tgaPath;
+    return &m_Cubemaps.at(tgaPath);
 }
 
-std::string ResourceManager::loadVertexArray(const std::string &objPath)
+const VertexArray *ResourceManager::loadVertexArray(const Mesh &mesh)
 {
-    OBJ obj(MODEL_DIR + objPath);
-    auto pair = obj.getVerticesIndices();
-    m_vertexArrays.emplace(objPath, VertexArray(pair.first, pair.second));
-    return objPath;
-}
-
-std::string ResourceManager::loadVertexArray(const std::string &id, const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices)
-{
-    m_vertexArrays.emplace(id, VertexArray(vertices, indices));
-    return id;
+    m_vertexArrays.emplace(mesh.name, VertexArray(mesh.vertices, mesh.indices));
+    return &m_vertexArrays.at(mesh.name);
 }

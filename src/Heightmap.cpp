@@ -30,7 +30,6 @@ Heightmap::Heightmap(int width, int height,
             v.texCoord = {
                 static_cast<float>(x),
                 static_cast<float>(z)};
-            v.color = {static_cast<GLubyte>(x), y, static_cast<GLubyte>(z), 255};
         }
     }
 
@@ -39,9 +38,9 @@ Heightmap::Heightmap(int width, int height,
     {
         for (int z = 0; z < height; ++z)
         {
-            std::array<GLfloat, 3> v1;
-            std::array<GLfloat, 3> v2;
-            std::array<GLfloat, 3> v3;
+            glm::vec3 v1;
+            glm::vec3 v2;
+            glm::vec3 v3; 
 
             // Handle edge cases
             if (x == 0)
@@ -65,14 +64,13 @@ Heightmap::Heightmap(int width, int height,
                 v3 = vertices[(x + 1) + (z - 1) * width].position;
 
             // The vertex normal is the normal formed by its surrounding neighbours
-            glm::vec3 e1 = {v1[0] - v3[0], v1[1] - v3[1], v1[2] - v3[2]};
-            glm::vec3 e2 = {v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]};
+            glm::vec3 e1 = v1 - v3;
+            glm::vec3 e2 = v1 - v2;
             glm::vec3 n = glm::cross(e1, e2);
             if (n.y < 0) // Flip the normal if it points downward
                 n *= -1;
 
-            n = glm::normalize(n);
-            vertices[x + z * width].normal = {n[0], n[1], n[2]};
+            vertices[x + z * width].normal = glm::normalize(n);
         }
     }
 

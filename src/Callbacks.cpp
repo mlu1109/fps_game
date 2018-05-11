@@ -1,6 +1,5 @@
 #include "Callbacks.hpp"
 
-
 Mouse *g_mouse;
 Camera *g_camera;
 
@@ -39,16 +38,16 @@ void mouseButtonCallback(GLFWwindow *window, int button, int action, int /* mods
     g_mouse->onButton(window, button, action);
 }
 
-void initCallbacks(GLFWwindow *window, Mouse *mouse, Camera *camera)
+void initCallbacks(Window *window, Mouse *mouse, Camera *camera)
 {
     g_mouse = mouse;
     g_camera = camera;
     // Error
-    glfwSetErrorCallback(errorCallback);
+    window->setErrorCallback(errorCallback);
     // Window
-    glfwSetWindowSizeCallback(window, windowResizeCallback);
+    window->setWindowResizeCallback(windowResizeCallback);
     // Cursor/Mouse
     //glfwSetCursorEnterCallback(g_window, cursorEnterCallback);
-    glfwSetCursorPosCallback(window, cursorPositionCallback);
-    glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    window->setCursorPositionCallback(cursorPositionCallback);
+    window->setMouseButtonCallback(mouseButtonCallback);
 }

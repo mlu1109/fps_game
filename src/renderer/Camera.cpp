@@ -1,11 +1,12 @@
 #include "../glm/print.hpp"
 #include "Camera.hpp"
-#include "constants.hpp"
+#include "Constants.hpp"
 
 Camera::Camera()
 {
     updateDirection();
     updateWorldView();
+    updateViewScreen();
 }
 
 void Camera::updateDirection()

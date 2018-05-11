@@ -3,13 +3,13 @@
 #include <vector>
 
 
-class TextureCubemap
+class Cubemap
 {
     GLuint m_id;
     const GLenum m_target = GL_TEXTURE_CUBE_MAP;
 
   public:
-    TextureCubemap();
+    Cubemap();
     
     void loadSide(GLenum target, const std::vector<GLubyte> &imageData, GLint internalFormat, GLsizei width, GLsizei height);
    

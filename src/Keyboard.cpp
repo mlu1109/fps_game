@@ -3,28 +3,28 @@
 #include "glm/print.hpp"
 
 
-void handleKeyInput(GLFWwindow *window, Camera &camera)
+void handleKeyInput(const Window &window, Camera &camera)
 {
     const float speed = 0.4;
     glm::vec3 translate{0};
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (window.isKeyPressed(GLFW_KEY_W))
         camera.moveD(-speed);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    if (window.isKeyPressed(GLFW_KEY_A))
         camera.moveR(-speed);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    if (window.isKeyPressed(GLFW_KEY_S))
         camera.moveD(speed);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    if (window.isKeyPressed(GLFW_KEY_D))
         camera.moveR(speed);
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    if (window.isKeyPressed(GLFW_KEY_UP))
         camera.pitch(speed * 0.1);
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+    if (window.isKeyPressed(GLFW_KEY_LEFT))
         camera.yaw(-speed * 0.1);
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    if (window.isKeyPressed(GLFW_KEY_DOWN))
         camera.pitch(-speed * 0.1);
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+    if (window.isKeyPressed(GLFW_KEY_RIGHT))
         camera.yaw(speed * 0.1);
     
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+    if (window.isKeyPressed(GLFW_KEY_P))
         std::cout << "Camera position: " << camera.getPosition() << '\n';
 }

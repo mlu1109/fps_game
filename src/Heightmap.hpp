@@ -1,11 +1,10 @@
 #pragma once
 
 #include <GL/glew.h>
-#include "renderer/Drawable.hpp"
 #include "renderer/TGA.hpp"
 #include "renderer/Vertex.hpp"
 
-class Heightmap : public Drawable
+class Heightmap
 {
     int m_width;
     int m_height;
@@ -30,10 +29,10 @@ class Heightmap : public Drawable
     glm::vec3 getCenter() const { return glm::vec3{static_cast<float>(getWidth()) / 2, 0, static_cast<float>(getHeight()) / 2}; }
     
     // Drawable
-    const std::string &getShader() const override { return m_shader; }
-    const std::string &getTexture() const override { return m_texture; }
-    const std::string &getVertexArray() const override { return m_vertexArray; }
-    const glm::mat4 &getModelWorld() const override { return m_modelView; }
+    const std::string &getShader() const  { return m_shader; }
+    const std::string &getTexture() const { return m_texture; }
+    const std::string &getVertexArray() const { return m_vertexArray; }
+    const glm::mat4 &getModelWorld() const { return m_modelView; }
     // Are used for building VertexArray
     const std::vector<Vertex> &getVertices() const { return m_vertices; }
     const std::vector<GLuint> &getIndices() const { return m_indices; }
