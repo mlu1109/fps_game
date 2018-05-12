@@ -104,3 +104,9 @@ Shader::Shader(const std::string &vertPath, const std::string &fragPath)
 {
     m_program = loadShaders(vertPath, fragPath);
 }
+
+void Shader::bind() const
+{
+    glUseProgram(m_program);
+    printError("Shader::bind");
+}

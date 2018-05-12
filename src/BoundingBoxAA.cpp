@@ -3,11 +3,10 @@
 #include "BoundingBoxAA.hpp"
 #include "BoundingSphere.hpp"
 
-AABB::AABB(const Transform &boundedTransform, const glm::vec3 &min, const glm::vec3 &max)
-    : BoundingVolume(boundedTransform), m_min_0(min), m_max_0(max) {}
+AABB::AABB(const glm::vec3 &min, const glm::vec3 &max)
+    : m_min_0(min), m_max_0(max) {}
 
-AABB::AABB(const Transform &boundedTransform, const std::vector<glm::vec3> &vertices)
-    : BoundingVolume(boundedTransform)
+AABB::AABB(const std::vector<glm::vec3> &vertices)
 {
     // Calculate extremes
     m_min_0 = vertices[0];
@@ -36,9 +35,8 @@ glm::vec3 AABB::getScale() const
                             m_max.z - m_min.z);
 }
 
-void AABB::update()
+void AABB::update(const Transform &t)
 {
-    const Transform &t = *m_boundedTransform;
     // Rotate vertices according to bounded transform
     glm::mat3 rotMat = glm::rotate(glm::mat4(1.0f), t.R.x, glm::vec3(1.0f, 0.0f, 0.0f)) *
                        glm::rotate(glm::mat4(1.0f), t.R.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
@@ -73,9 +71,6 @@ void AABB::update()
                           glm::scale(glm::mat4(1.0f), t.S);
     m_min = transform * glm::vec4(min, 1.0);
     m_max = transform * glm::vec4(max, 1.0);
-
-    m_modelWorld = glm::translate(glm::mat4(1.0f), getCenter()) *
-                   glm::scale(glm::mat4(1.0f), getScale());
 }
 
 bool AABB::isIntersecting(const BoundingVolume &bv) const

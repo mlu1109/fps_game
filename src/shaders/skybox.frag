@@ -5,7 +5,7 @@
 in vec3 texCoord;
 out vec4 outColor;
 
-layout(location = 4) uniform samplerCube texUnit;
+layout(location = 12) uniform samplerCube texUnit;
 
 void main()
 {

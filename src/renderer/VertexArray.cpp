@@ -1,7 +1,7 @@
-#include <cstddef>       // offsetof
+#include <cstddef> // offsetof
 #include "VertexArray.hpp"
 #include "Constants.hpp" // ATTRIB_...
-
+#include "Error.hpp"
 
 VertexArray::VertexArray(const std::vector<Vertex> &vertices)
 {
@@ -31,6 +31,8 @@ VertexArray::VertexArray(const std::vector<Vertex> &vertices)
     glEnableVertexAttribArray(ATTRIB_POSITION);
     glEnableVertexAttribArray(ATTRIB_NORMAL);
     glEnableVertexAttribArray(ATTRIB_TEX_COORD);
+
+    printError("VertexArray::VertexArray");
 }
 
 VertexArray::VertexArray(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices)
@@ -46,6 +48,8 @@ VertexArray::VertexArray(const std::vector<Vertex> &vertices, const std::vector<
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId);
     size_t bufSize = indices.size() * sizeof(GLuint);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufSize, indices.data(), GL_STATIC_DRAW);
+
+    printError("VertexArray::VertexArray");
 }
 
 void VertexArray::destroy()
@@ -53,4 +57,10 @@ void VertexArray::destroy()
     glDeleteBuffers(1, &m_vertexBufferId);
     glDeleteBuffers(1, &m_indexBufferId);
     glDeleteVertexArrays(1, &m_id);
+}
+
+void VertexArray::bind() const
+{
+    glBindVertexArray(m_id);
+    printError("VertexArray::bind");
 }

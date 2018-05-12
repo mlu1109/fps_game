@@ -2,12 +2,14 @@
 
 #include <unordered_map>
 #include <vector>
-#include "OBJ.hpp"
-#include "TGA.hpp"
-#include "Shader.hpp"
-#include "Texture.hpp"
-#include "Cubemap.hpp"
-#include "VertexArray.hpp"
+#include "renderer/OBJ.hpp"
+#include "renderer/TGA.hpp"
+#include "renderer/Shader.hpp"
+#include "renderer/Texture.hpp"
+#include "renderer/Cubemap.hpp"
+#include "renderer/VertexArray.hpp"
+#include "GameObject.hpp"
+#include "Skybox.hpp"
 
 class ResourceManager
 {
@@ -23,4 +25,7 @@ class ResourceManager
     const Texture *loadTexture(const std::string &tgaPath);
     const Cubemap *loadCubemap(const std::string &tgaPath);
     const VertexArray *loadVertexArray(const Mesh &mesh);
+
+    GameObject loadObject(const std::string &objPath, int meshIdx = 0);
+    Skybox loadSkybox(const std::string &objPath, const std::string &cubemapPath, const std::string &shaderName);
 };

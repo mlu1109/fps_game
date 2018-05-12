@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <vector>
 #include "Vertex.hpp"
+#include "Error.hpp"
 
 class VertexArray
 {
@@ -19,6 +20,6 @@ class VertexArray
     GLsizei getVertexCount() const { return m_vertexCount; }
     GLsizei getIndexCount() const { return m_indexCount; }
 
-    void bind() const { glBindVertexArray(m_id); }
+    void bind() const;
     void destroy();
 };

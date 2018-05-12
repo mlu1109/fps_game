@@ -27,7 +27,17 @@ OBJ::OBJ(const std::string &path)
     {
         const auto &objMesh = shape.mesh;
         Mesh mesh;
+        mesh.path = path;
         mesh.name = shape.name;
+
+        for (const auto &shapeMaterial : materials)
+        {
+            glm::vec3 ambient{shapeMaterial.ambient[0], shapeMaterial.ambient[1], shapeMaterial.ambient[2]};
+            glm::vec3 diffuse{shapeMaterial.diffuse[0], shapeMaterial.diffuse[1], shapeMaterial.diffuse[2]};
+            glm::vec3 specular{shapeMaterial.specular[0], shapeMaterial.specular[1], shapeMaterial.specular[2]};
+            float shine = shapeMaterial.shininess;
+            mesh.materials.push_back(Material{ambient, diffuse, specular, shine});
+        }
 
         // Find unique vertices. Map indices to vertices
         std::map<Vertex, GLuint> vertexToIndex;
@@ -35,6 +45,7 @@ OBJ::OBJ(const std::string &path)
         std::vector<GLuint> indices;
         // Loop over faces
         size_t idxOffset = 0;
+        size_t idxFace = 0;
         for (auto fv : objMesh.num_face_vertices)
         {
             // Loop over vertices in face f
@@ -74,8 +85,9 @@ OBJ::OBJ(const std::string &path)
                 }
 
                 indices.push_back(vertexToIndex[vertex]);
+                mesh.indexMaterialId.push_back(objMesh.material_ids[idxFace]);
             }
-
+            idxFace += 1;
             idxOffset += fv;
         }
 

@@ -3,13 +3,12 @@
 #include "BoundingBoxAA.hpp"
 #include "BoundingSphere.hpp"
 
-BoundingSphere::BoundingSphere(const Transform &boundedTransform, const glm::vec3 &center, float radius)
-    : BoundingVolume(boundedTransform), m_center_0(center), m_radius_0(radius) {}
+BoundingSphere::BoundingSphere(const glm::vec3 &center, float radius)
+    : m_center_0(center), m_radius_0(radius) {}
 
 // Ritter's Bounding Sphere
 // Reference: https://www.researchgate.net/publication/242453691_An_Efficient_Bounding_Sphere
-BoundingSphere::BoundingSphere(const Transform &boundedTransform, const std::vector<glm::vec3> &vertices)
-    : BoundingVolume(boundedTransform)
+BoundingSphere::BoundingSphere(const std::vector<glm::vec3> &vertices)
 {
     // Find six points where min_x has the smallest x-component, min_y has the smallest y-component and so forth
     std::array<glm::vec3, 6> points; // [min_x, min_y, min_z, max_x, max_y, max_z]
@@ -59,9 +58,8 @@ BoundingSphere::BoundingSphere(const Transform &boundedTransform, const std::vec
     m_radius_0 = radius;
 }
 
-void BoundingSphere::update()
+void BoundingSphere::update(const Transform &t)
 {
-    const Transform &t = *m_boundedTransform;
     float maxScale = std::max(t.S.x, std::max(t.S.y, t.S.z));
     m_radius = m_radius_0 * maxScale;
     m_center = m_center_0 + t.T;

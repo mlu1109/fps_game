@@ -16,6 +16,7 @@ struct Material
 
 struct Mesh
 {
+    std::string path;
     std::string name;
     std::vector<GLuint> indices;
     std::vector<Vertex> vertices;

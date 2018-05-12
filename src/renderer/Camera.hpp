@@ -40,6 +40,8 @@ class Camera
     const glm::vec3 &getDirection() const { return m_d; }
     const glm::mat4 &getViewScreen() const { return m_viewScreen; }
     const glm::mat4 &getWorldView() const { return m_worldView; }
+    
+    glm::mat4 getWorldViewNormal() const;
 
     void yaw(float rad);
     void pitch(float rad);

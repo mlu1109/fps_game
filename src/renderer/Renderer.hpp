@@ -5,7 +5,11 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "Constants.hpp"
-#include "ResourceManager.hpp"
+#include "VertexArray.hpp"
+#include "Texture.hpp"
+#include "Cubemap.hpp"
+#include "Shader.hpp"
+#include "Error.hpp"
 
 class Renderer
 {
@@ -21,15 +25,26 @@ class Renderer
 
     //void setUniformColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) { glUniform4f(UNIFORM_COLOR, r / 255.0, g / 255.0, b / 255.0, a / 255.0); }
     void setUniformTime(float time) { glUniform1f(UNIFORM_TIME, time); }
-    void setUniformModelWorld(const glm::mat4 &modelWorld) { glUniformMatrix4fv(UNIFORM_MODEL_WORLD, 1, GL_FALSE, &modelWorld[0][0]); }
-    void setUniformWorldView(const glm::mat4 &worldView) { glUniformMatrix4fv(UNIFORM_WORLD_VIEW, 1, GL_FALSE, &worldView[0][0]); }
-    void setUniformViewScreen(const glm::mat4 &viewScreen) { glUniformMatrix4fv(UNIFORM_VIEW_SCREEN, 1, GL_FALSE, &viewScreen[0][0]); }
+    void setUniformModelWorld(const glm::mat4 &modelWorld);
+    void setUniformWorldView(const glm::mat4 &worldView);
+    void setUniformViewScreen(const glm::mat4 &viewScreen);
+    void setUniformModelViewNormal(const glm::mat4 &modelViewNormal);
+    void setUniformLightPosition(const glm::vec3 &lightPosition);
+    void setUniformLightColor(const glm::vec3 &lightColor);
+    void setUniformMaterialAmbient(const glm::vec3 &materialAmbient);
+    void setUniformMaterialDiffuse(const glm::vec3 &materialDiffuse);
+    void setUniformMaterialSpecular(const glm::vec3 &materialSpecular);
+    void setUniformMaterialShine(float materialShine);
+    void setUniformCameraPosition(const glm::vec3 &cameraPosition);
 
     void enableWireframe() const { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
     void disableWireframe() const { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
     void enableBlend() const { glEnable(GL_BLEND); }
     void disableBlend() const { glDisable(GL_BLEND); }
+    void enableDepthTest() const { glEnable(GL_DEPTH_TEST); }
+    void disableDepthTest() const { glDisable(GL_DEPTH_TEST); }
 
     void clear();
     void render(const VertexArray *);
+    void render(const VertexArray *, GLint idxFrom, GLsizei idxCount);
 };

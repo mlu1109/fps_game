@@ -7,12 +7,7 @@ class BoundingSphere; // Forward declared
 
 class BoundingVolume
 {
-  protected:
-    const Transform *m_boundedTransform; // The transform of the enclosed shape
-
-  public:
-    BoundingVolume(const Transform &boundedTransform) : m_boundedTransform(&boundedTransform) {}
-    
+  public:    
     virtual bool isIntersecting(const BoundingVolume &) const = 0;
     virtual bool isIntersecting(const BoundingSphere &) const = 0;
     virtual bool isIntersecting(const AABB &) const = 0;

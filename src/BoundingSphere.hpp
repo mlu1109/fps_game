@@ -20,8 +20,8 @@ class BoundingSphere : public BoundingVolume
     glm::mat4 m_modelWorld;
   
   public:
-    BoundingSphere(const Transform &boundedTransform, const glm::vec3 &center, float radius);
-    BoundingSphere(const Transform &boundedTransform, const std::vector<glm::vec3> &vertices);
+    BoundingSphere(const glm::vec3 &center, float radius);
+    BoundingSphere(const std::vector<glm::vec3> &vertices);
 
     const glm::vec3 &getCenter() const { return m_center; };
     float getRadius() const { return m_radius; }
@@ -31,7 +31,7 @@ class BoundingSphere : public BoundingVolume
     const std::string &getVertexArray() const { return m_vertexArray; }
     const glm::mat4 &getModelWorld() const { return m_modelWorld; }
 
-    void update();
+    void update(const Transform&);
 
     // BoundingVolume interface
     bool isIntersecting(const BoundingVolume &) const override;

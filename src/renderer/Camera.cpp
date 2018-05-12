@@ -21,6 +21,11 @@ void Camera::updateDirection()
     updateWorldView();
 }
 
+glm::mat4 Camera::getWorldViewNormal() const
+{
+    return glm::transpose(glm::inverse(m_worldView));
+}
+
 void Camera::yaw(float rad)
 {
     m_angleYaw -= rad;

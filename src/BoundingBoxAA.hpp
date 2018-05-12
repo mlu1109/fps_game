@@ -13,25 +13,15 @@ class AABB : public BoundingVolume
     // The bounding box with the bounded shape's transformations applied
     glm::vec3 m_min;
     glm::vec3 m_max;
-    // Drawable
-    std::string m_shader = "color_solid";
-    std::string m_texture = "";
-    std::string m_vertexArray = "cube.obj";
-    glm::mat4 m_modelWorld;
 
   public:
-    AABB(const Transform &boundedTransform, const glm::vec3 &min, const glm::vec3 &max);
-    AABB(const Transform &boundedTrasnform, const std::vector<glm::vec3> &vertices);
+    AABB( const glm::vec3 &min, const glm::vec3 &max);
+    AABB( const std::vector<glm::vec3> &vertices);
 
     const glm::vec3 &getMin() const { return m_min; }
     const glm::vec3 &getMax() const { return m_max; }
-    // Drawable
-    const std::string &getShader() const { return m_shader; }
-    const std::string &getTexture() const { return m_texture; }
-    const std::string &getVertexArray() const { return m_vertexArray; }
-    const glm::mat4 &getModelWorld() const { return m_modelWorld; }
 
-    void update();
+    void update(const Transform &);
 
     glm::vec3 getCenter() const;
     glm::vec3 getScale() const;
