@@ -31,7 +31,7 @@ const Shader *ResourceManager::loadShader(const std::string &name)
 
 const Texture *ResourceManager::loadTexture(const std::string &tgaPath)
 {
-    TGA tga = loadTGA(TEXTURE_DIR + tgaPath);
+    TGA tga = loadTGA(tgaPath);
     GLint internalFormat = tga.bitsPerPixel == 32 ? GL_RGBA : GL_RGB;
     m_textures.emplace(tgaPath, Texture(tga.imageData, internalFormat, tga.width, tga.height));
 

@@ -5,7 +5,7 @@
 in vec2 texCoord;
 out vec4 outColor;
 
-layout(location = 4) uniform sampler2D texUnit;
+layout(location = 12) uniform sampler2D texUnit;
 
 void main(void)
 {

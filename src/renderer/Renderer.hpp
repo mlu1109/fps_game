@@ -49,4 +49,5 @@ class Renderer
     void clear();
     void render(const VertexArray *);
     void render(const VertexArray *, GLint idxFrom, GLsizei idxCount);
+    void drawCrosshair();
 };

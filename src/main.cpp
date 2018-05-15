@@ -88,6 +88,7 @@ int main()
     const Shader *shaderColorSolid = resourceManager.loadShader("color_solid");
     const Shader *shaderPhong = resourceManager.loadShader("phong");
     const Shader *shaderWater = resourceManager.loadShader("water");
+    const Shader *shaderTexture = resourceManager.loadShader("plain_texture");
     std::vector<const Shader *> shaders = {shaderColorSolid, shaderPhong, shaderWater};
 
     // Constant uniforms
@@ -104,6 +105,13 @@ int main()
 
     const VertexArray *vaSphere = resourceManager.loadVertexArray(OBJ(PATH_OBJ_SPHERE).getMeshes()[0]);
     const VertexArray *vaCube = resourceManager.loadVertexArray(OBJ(PATH_OBJ_CUBE).getMeshes()[0]);
+    const VertexArray *vaPlane = resourceManager.loadVertexArray(OBJ("assets/models/plane.obj").getMeshes()[0]);
+    
+    /*
+     * Load Textures
+     */
+
+    const Texture *texCrosshari = resourceManager.loadTexture("assets/textures/crosshair.tga");
 
     /*
      * Game loop
@@ -192,9 +200,9 @@ int main()
         renderer.setUniformWorldView(camera.getWorldView());
         renderer.setUniformViewScreen(camera.getViewScreen());
         renderer.setUniformCameraPosition(camera.getPosition());
-        
+
         // Point Lights
-        renderer.setUniformActivePointLights((int) world.getEnemies().size());
+        renderer.setUniformActivePointLights((int)world.getEnemies().size());
         std::array<glm::vec3, 10> pointLightPositions;
         std::array<glm::vec3, 10> pointLightColors;
         for (int i = 0; i < world.getEnemies().size(); ++i)
@@ -206,8 +214,10 @@ int main()
         renderer.setUniformPointLightColors(pointLightColors);
         // Static Objects
         for (const auto &o : world.getStaticObjects())
-            o.getModel().render(renderer, camera.getWorldView());
-
+        {
+            if (glm::dot(o.getTransform().T, camera.getPosition() - camera.getDirection()) > 0)
+                o.getModel().render(renderer, camera.getWorldView());
+        }
         // Enemies
         for (const auto &e : world.getEnemies())
             e.getModel().render(renderer, camera.getWorldView());
@@ -256,6 +266,18 @@ int main()
         //    renderer.setUniformModelWorld(hb.getModelWorld());
         //    renderer.render(vaCube);
         //}
+        renderer.disableBlend();
+
+        /*
+         * HUD
+         */
+        renderer.enableBlend();
+        renderer.setShader(shaderTexture);
+        renderer.setUniformModelWorld(glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, -1.0f}) * glm::scale(glm::mat4{1.0f}, glm::vec3{0.03, 0.03 , 0}));
+        renderer.setUniformWorldView(glm::mat4{1.0f});
+        renderer.setUniformViewScreen(glm::mat4{1.0f});
+        renderer.setTexture(texCrosshari);
+        renderer.render(vaPlane);
         renderer.disableBlend();
         window.swapBuffers();
         // Print FPS
