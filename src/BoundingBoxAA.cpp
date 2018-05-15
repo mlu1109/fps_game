@@ -1,5 +1,6 @@
 #include <array>
 #include <glm/gtc/matrix_transform.hpp>
+#include <cmath>
 #include "BoundingBoxAA.hpp"
 #include "BoundingSphere.hpp"
 
@@ -71,6 +72,8 @@ void AABB::update(const Transform &t)
                           glm::scale(glm::mat4(1.0f), t.S);
     m_min = transform * glm::vec4(min, 1.0);
     m_max = transform * glm::vec4(max, 1.0);
+
+    m_modelWorld = glm::translate(glm::mat4(1.0f), getCenter()) * glm::scale(glm::mat4(1.0f), getScale());
 }
 
 bool AABB::isIntersecting(const BoundingVolume &bv) const
@@ -82,8 +85,8 @@ bool AABB::isIntersecting(const AABB &other) const
 {
     const glm::vec3 &a_max = m_max;
     const glm::vec3 &a_min = m_min;
-    const glm::vec3 &b_max = other.getMin();
-    const glm::vec3 &b_min = other.getMax();
+    const glm::vec3 &b_max = other.getMax();
+    const glm::vec3 &b_min = other.getMin();
 
     return !(a_max.x < b_min.x || b_max.x < a_min.x ||
              a_max.y < b_min.y || b_max.y < a_min.y ||
@@ -125,4 +128,70 @@ bool AABB::hasPoint(const glm::vec3 &point) const
     return !(m_max.x < point.x || point.x < m_min.x ||
              m_max.y < point.y || point.y < m_min.y ||
              m_max.z < point.z || point.z < m_min.z);
+}
+
+glm::vec3 AABB::getMTV(const AABB &other) const
+{
+    const glm::vec3 &a_max = m_max;
+    const glm::vec3 &a_min = m_min;
+    const glm::vec3 &b_max = other.getMax();
+    const glm::vec3 &b_min = other.getMin();
+
+    float x = 0.02f;
+    float y = 0.02f;
+    float z = 0.02f;
+
+    if (a_min.x < b_max.x && a_max.x > b_max.x)
+        x += std::min(b_max.x - a_min.x, a_max.x - b_max.x);
+    else
+        x += std::min(a_max.x - b_min.x, b_min.x - a_min.x);
+
+    if (a_min.y < b_max.y && a_max.y > b_max.y)
+        y += std::min(b_max.y - a_min.y, a_max.y - b_max.y);
+    else
+        y += std::min(a_max.y - b_min.y, b_min.y - a_min.y);
+
+    if (a_min.z < b_max.z && a_max.z > b_max.z)
+        z += std::min(b_max.z - a_min.z, a_max.z - b_max.z);
+    else
+        z += std::min(a_max.z - b_min.z, b_min.z - a_min.z);
+    
+    if (x < y)
+        if (x < z)
+            return glm::vec3(x, 0, 0);
+        else // z <= x
+            return glm::vec3(0, 0, z);
+    else // y >= x
+        if (y < z)
+            return glm::vec3(0, y, 0);
+        else // z <= y
+            return glm::vec3(0, 0, z);
+}
+
+glm::vec3 AABB::getMTV(const BoundingSphere &other) const
+{
+    const glm::vec3 &a_max = m_max;
+    const glm::vec3 &a_min = m_min;
+    const glm::vec3 &b_center = other.getCenter();
+
+    // Closest vertex of the AABB to the center of the sphere
+    glm::vec3 a_closest;
+
+    for (int i = 0; i < 3; ++i) // x, y, z
+    {
+        if (a_min[i] > b_center[i])
+            a_closest[i] = a_min[i];
+        else if (a_max[i] < b_center[i])
+            a_closest[i] = a_max[i];
+        else
+            a_closest[i] = b_center[i];
+    }
+
+    float distance = glm::distance(a_closest, b_center);
+    if (a_closest == b_center)
+        return glm::vec3(0, 0, 0);
+        
+    glm::vec3 mtv = glm::normalize(a_closest - b_center);
+
+    return mtv * (other.getRadius() - distance);
 }

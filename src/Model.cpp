@@ -13,13 +13,12 @@ void Model::render(Renderer &renderer, const glm::mat4 &worldView) const
     {
         int curMaterialId = m_indexMaterialId[processed];
         size_t idxCount = 1;
-        for (; idxCount < m_indexMaterialId.size(); ++idxCount)
+        for (; processed + idxCount < m_indexMaterialId.size(); ++idxCount)
             if (m_indexMaterialId[processed + idxCount] != curMaterialId)
                 break;
 
         renderer.setUniformModelWorld(m_modelWorld);
         renderer.setUniformModelViewNormal(glm::transpose(glm::inverse(worldView * m_modelWorld)));
-        
         if (curMaterialId != -1)
         {
             const Material &m = m_materials[curMaterialId];

@@ -14,12 +14,16 @@ class AABB : public BoundingVolume
     glm::vec3 m_min;
     glm::vec3 m_max;
 
+    glm::mat4 m_modelWorld;
+
   public:
-    AABB( const glm::vec3 &min, const glm::vec3 &max);
-    AABB( const std::vector<glm::vec3> &vertices);
+    AABB(const glm::vec3 &min, const glm::vec3 &max);
+    AABB(const std::vector<glm::vec3> &vertices);
+    AABB() = default;
 
     const glm::vec3 &getMin() const { return m_min; }
     const glm::vec3 &getMax() const { return m_max; }
+    const glm::mat4 &getModelWorld() const { return m_modelWorld; }
 
     void update(const Transform &);
 
@@ -31,5 +35,9 @@ class AABB : public BoundingVolume
     bool isIntersecting(const AABB &) const override;
     bool isIntersecting(const BoundingSphere &) const override;
     bool isIntersecting(const Ray &) const override;
+    glm::vec3 getMTV(const AABB &) const;
+    glm::vec3 getMTV(const BoundingSphere &) const;
+
+
     bool hasPoint(const glm::vec3 &) const;
 };

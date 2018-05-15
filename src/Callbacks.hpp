@@ -6,3 +6,4 @@
 #include "renderer/Window.hpp"
 
 void initCallbacks(Window *window, Mouse *mouse, Camera *camera);
+void setCallbackCamera(Camera *camera);

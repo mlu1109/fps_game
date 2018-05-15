@@ -38,6 +38,11 @@ void mouseButtonCallback(GLFWwindow *window, int button, int action, int /* mods
     g_mouse->onButton(window, button, action);
 }
 
+void mouseScrollCallback(GLFWwindow *, double /*xOffset*/, double yOffset)
+{
+    g_mouse->onScrollY(yOffset);
+}
+
 void initCallbacks(Window *window, Mouse *mouse, Camera *camera)
 {
     g_mouse = mouse;
@@ -50,4 +55,10 @@ void initCallbacks(Window *window, Mouse *mouse, Camera *camera)
     //glfwSetCursorEnterCallback(g_window, cursorEnterCallback);
     window->setCursorPositionCallback(cursorPositionCallback);
     window->setMouseButtonCallback(mouseButtonCallback);
+    window->setMouseScrollCallback(mouseScrollCallback);
+}
+
+void setCallbackCamera(Camera *camera)
+{
+    g_camera = camera;
 }

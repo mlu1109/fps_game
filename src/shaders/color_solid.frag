@@ -4,9 +4,9 @@
 
 out vec4 outColor;
 
-layout(location = 5) uniform vec4 color;
+layout(location = 5) uniform vec3 color;
 
 void main(void)
 {
-    outColor = color;
+    outColor = vec4(color, 0.2);
 }

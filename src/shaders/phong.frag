@@ -19,12 +19,14 @@ layout(location = 8) uniform vec3 materialDiffuse;
 layout(location = 9) uniform vec3 materialSpecular;
 layout(location = 10) uniform float materialShine;
 
+layout(location = 13) uniform int activePointLights;
+layout(location = 14) uniform vec3 pointLightPositions[10];
+layout(location = 24) uniform vec3 pointLightColors[10];
+
 void main(void)
 {
     float a = materialShine;
 
-    // Point light
-    //vec3 s = normalize(vec3(worldView * vec4(lightPosition, 1.0)) - position);
     // Directional light
     vec3 s = normalize(vec3(worldView * vec4(lightPosition, 0.0)));
     vec3 ambient = vec3(0, 0, 0);
@@ -38,6 +40,18 @@ void main(void)
     // Diffuse: i_diff = k_d * i_s * cos(theta)
     float cos_theta = max(dot(s, n), 0);
     diffuse += materialDiffuse * lightColor * cos_theta;
+
+    for (int i = 0; i < activePointLights; ++i)
+    {
+        // Point light
+        vec3 pointLightPositionView = vec3(worldView * vec4(pointLightPositions[i], 1.0));
+        float d = distance(position, pointLightPositionView);
+        float f = 1.0 / (1 + 0.001 * d * d);
+        ambient += materialAmbient * pointLightColors[i] * f;
+        s = normalize(vec3(worldView * vec4(pointLightPositions[i], 1.0)) - position);
+        cos_theta = max(dot(s, n), 0);
+        diffuse += materialDiffuse * pointLightColors[i] * cos_theta * f;
+    }
 
     vec3 result = ambient + diffuse;
     result.r = min(result.r, 1);

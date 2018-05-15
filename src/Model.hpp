@@ -6,8 +6,8 @@
 class Model
 {
     const VertexArray *m_vertexArray;
-    const std::vector<Material> m_materials;
-    const std::vector<int> m_indexMaterialId;
+    std::vector<Material> m_materials;
+    std::vector<int> m_indexMaterialId;
     glm::mat4 m_modelWorld;
 
   public:

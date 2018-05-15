@@ -60,8 +60,7 @@ void Renderer::render(const VertexArray *va)
 void Renderer::render(const VertexArray *va, GLint idxFrom, GLsizei idxCount)
 {
     va->bind();
-    //glDrawElements(m_primitive, idxCount, GL_UNSIGNED_INT, (void *)(idxFrom * sizeof(GLuint)));
-    glDrawElements(m_primitive, va->getIndexCount(), GL_UNSIGNED_INT, 0);
+    glDrawElements(m_primitive, idxCount, GL_UNSIGNED_INT, (void *)(idxFrom * sizeof(GLuint)));
     printError("Renderer::render idxFrom: " + std::to_string(idxFrom) + " " + "idxCount: " + std::to_string(idxCount));
 }
 
@@ -129,4 +128,22 @@ void Renderer::setUniformCameraPosition(const glm::vec3 &cameraPosition)
 {
     glUniform3fv(UNIFORM_CAMERA_POSITION, 1, &cameraPosition[0]);
     printError("Renderer::setUniformCameraPosition");
+}
+
+void Renderer::setUniformActivePointLights(int activePointLights)
+{
+    glUniform1i(UNIFORM_ACTIVE_POINTLIGHTS, activePointLights);
+    printError("Renderer::setUniformActivePointLights");
+}
+
+void Renderer::setUniformPointLightPositions(const std::array<glm::vec3, 10> &pointLightPositions)
+{
+    glUniform3fv(UNIFORM_POINTLIGHT_POSITIONS, 10, &pointLightPositions[0][0]);
+    printError("Renderer::setUniformPointLightPositions");
+}
+
+void Renderer::setUniformPointLightColors(const std::array<glm::vec3, 10> &pointLightColors)
+{
+    glUniform3fv(UNIFORM_POINTLIGHT_COLORS, 10, &pointLightColors[0][0]);
+    printError("Renderer::setUniformPointLightColors");
 }

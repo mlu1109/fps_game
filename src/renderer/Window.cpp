@@ -59,3 +59,8 @@ void Window::setMouseButtonCallback(void (*funcPtr)(GLFWwindow *, int button, in
 {
     glfwSetMouseButtonCallback(m_window, funcPtr);
 }
+
+void Window::setMouseScrollCallback(void (*funcPtr)(GLFWwindow *, double /*xoffset */, double yoffset))
+{
+    glfwSetScrollCallback(m_window, funcPtr);
+}

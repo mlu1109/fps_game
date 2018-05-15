@@ -21,8 +21,8 @@ class Skybox
 
     void setLightPosition(const glm::vec3 lp) { m_lightPosition = lp; }
     void setLightColor(const glm::vec3 lc) { m_lightColor = lc; }
-    const glm::vec3 &getLightPosition() { return m_lightPosition; }
-    const glm::vec3 &getLightColor() { return m_lightColor; }
+    const glm::vec3 &getLightPosition() const { return m_lightPosition; }
+    const glm::vec3 &getLightColor() const { return m_lightColor; }
     void render(Renderer&, glm::mat4 worldView, const glm::mat4 &viewScreen) const;
 
 };

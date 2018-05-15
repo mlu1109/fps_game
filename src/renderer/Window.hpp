@@ -6,6 +6,8 @@
 class Window
 {
     GLFWwindow *m_window;
+    int m_width;
+    int m_height;
 
   public:
     Window();
@@ -18,7 +20,7 @@ class Window
     void setCursorPositionCallback(void (*funcPtr)(GLFWwindow *, double xpos, double ypos));
     void setWindowResizeCallback(void (*funcPtr)(GLFWwindow *, int width, int height));
     void setMouseButtonCallback(void (*funcPtr)(GLFWwindow *, int button, int action, int mods));
-
+    void setMouseScrollCallback(void (*funcPtr)(GLFWwindow *, double xoffset, double yoffset));
     bool isKeyPressed(int key) const { return glfwGetKey(m_window, key) == GLFW_PRESS; }
 
     void destroy();

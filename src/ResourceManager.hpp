@@ -10,6 +10,9 @@
 #include "renderer/VertexArray.hpp"
 #include "GameObject.hpp"
 #include "Skybox.hpp"
+#include "Terrain.hpp"
+#include "Player.hpp"
+#include "Enemy.hpp"
 
 class ResourceManager
 {
@@ -25,7 +28,12 @@ class ResourceManager
     const Texture *loadTexture(const std::string &tgaPath);
     const Cubemap *loadCubemap(const std::string &tgaPath);
     const VertexArray *loadVertexArray(const Mesh &mesh);
+    const VertexArray *loadVertexArray(const std::string &id, const std::vector<Vertex> &, const std::vector<GLuint> &indices);
 
     GameObject loadObject(const std::string &objPath, int meshIdx = 0);
+    GameObject loadObject(const std::string &objPath, const std::string &objHitboxPath, int meshIdx = 0);
     Skybox loadSkybox(const std::string &objPath, const std::string &cubemapPath, const std::string &shaderName);
+    Terrain loadTerrain(const std::string &tgaHeightmapPath);
+    Player loadPlayer(const std::string &objPath, const std::string &objHitboxPath);
+    Enemy loadEnemy(const std::string &objPath, const std::string &objHitboxPath);
 };

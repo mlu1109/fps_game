@@ -23,7 +23,6 @@ class Renderer
     void setTexture(const Texture *, GLenum textureUnit = GL_TEXTURE0);
     void setCubemap(const Cubemap *, GLenum textureUnit = GL_TEXTURE0);
 
-    //void setUniformColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) { glUniform4f(UNIFORM_COLOR, r / 255.0, g / 255.0, b / 255.0, a / 255.0); }
     void setUniformTime(float time) { glUniform1f(UNIFORM_TIME, time); }
     void setUniformModelWorld(const glm::mat4 &modelWorld);
     void setUniformWorldView(const glm::mat4 &worldView);
@@ -36,6 +35,9 @@ class Renderer
     void setUniformMaterialSpecular(const glm::vec3 &materialSpecular);
     void setUniformMaterialShine(float materialShine);
     void setUniformCameraPosition(const glm::vec3 &cameraPosition);
+    void setUniformActivePointLights(int activePointLights);
+    void setUniformPointLightPositions(const std::array<glm::vec3, 10> &pointLightPositions);
+    void setUniformPointLightColors(const std::array<glm::vec3, 10> &pointLightColors);
 
     void enableWireframe() const { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
     void disableWireframe() const { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }

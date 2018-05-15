@@ -1,33 +1,13 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
 #include "Mouse.hpp"
 #include "Ray.hpp"
-
-void Mouse::castRay(int x, int y, int screenWidth, int screenHeight)
-{
-    // Reference: http://antongerdelan.net/opengl/raycasting.html
-    
-    // Find direction in world coordinates [-1, 1] for x, y, z
-    glm::vec4 ray_nds(
-        (2.0f * x) / screenWidth - 1.0f,
-        1.0f - (2.0f * y) / screenHeight,
-        -1.0f, // OpenGL forward
-        1.0f);
-
-    // 4d Camera coordinates
-    glm::vec4 ray_cam = glm::inverse(m_camera->getViewScreen()) * ray_nds;
-    ray_cam.w = 0.0f;
-    glm::vec3 ray_wor = glm::inverse(m_camera->getWorldView()) * ray_cam;
-    Ray ray{m_camera->getPosition(), glm::normalize(ray_wor)};
-    //m_game->pickByRay(ray);
-}
 
 void Mouse::onRelease(GLFWwindow *window, int button)
 {
     switch (button)
     {
-    case GLFW_MOUSE_BUTTON_LEFT:
+    case GLFW_MOUSE_BUTTON_RIGHT:
     {
         int nextMode;
         if (m_mouseLook)
@@ -55,12 +35,11 @@ void Mouse::onPress(GLFWwindow *window, int button)
 {
     switch (button)
     {
-    case GLFW_MOUSE_BUTTON_RIGHT:
+    case GLFW_MOUSE_BUTTON_LEFT:
     {
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
-        castRay(m_mouseLastX, m_mouseLastY, width, height);
-
+        m_leftClick = true;
+        m_leftClickX = m_mouseLastX;
+        m_leftClickY = m_mouseLastY;
         break;
     }
     default:
@@ -92,4 +71,16 @@ void Mouse::onMove(double x, double y)
     }
     m_mouseLastX = x;
     m_mouseLastY = y;
+}
+
+void Mouse::onScrollY(double yOffset)
+{
+    m_mouseWheel += yOffset;
+}
+
+bool Mouse::hasLeftClicked()
+{
+    bool ret = m_leftClick;
+    m_leftClick = false;
+    return ret;
 }

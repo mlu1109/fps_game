@@ -22,7 +22,8 @@ class BoundingSphere : public BoundingVolume
   public:
     BoundingSphere(const glm::vec3 &center, float radius);
     BoundingSphere(const std::vector<glm::vec3> &vertices);
-
+    BoundingSphere() = default;
+    
     const glm::vec3 &getCenter() const { return m_center; };
     float getRadius() const { return m_radius; }
     // Drawable
