@@ -20,8 +20,8 @@ layout(location = 9) uniform vec3 materialSpecular;
 layout(location = 10) uniform float materialShine;
 
 layout(location = 13) uniform int activePointLights;
-layout(location = 14) uniform vec3 pointLightPositions[10];
-layout(location = 24) uniform vec3 pointLightColors[10];
+layout(location = 14) uniform vec3 pointLightPositions[20];
+layout(location = 34) uniform vec3 pointLightColors[20];
 
 void main(void)
 {

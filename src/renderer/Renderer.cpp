@@ -136,14 +136,14 @@ void Renderer::setUniformActivePointLights(int activePointLights)
     printError("Renderer::setUniformActivePointLights");
 }
 
-void Renderer::setUniformPointLightPositions(const std::array<glm::vec3, 10> &pointLightPositions)
+void Renderer::setUniformPointLightPositions(const std::array<glm::vec3, 20> &pointLightPositions)
 {
-    glUniform3fv(UNIFORM_POINTLIGHT_POSITIONS, 10, &pointLightPositions[0][0]);
+    glUniform3fv(UNIFORM_POINTLIGHT_POSITIONS, 20, &pointLightPositions[0][0]);
     printError("Renderer::setUniformPointLightPositions");
 }
 
-void Renderer::setUniformPointLightColors(const std::array<glm::vec3, 10> &pointLightColors)
+void Renderer::setUniformPointLightColors(const std::array<glm::vec3, 20> &pointLightColors)
 {
-    glUniform3fv(UNIFORM_POINTLIGHT_COLORS, 10, &pointLightColors[0][0]);
+    glUniform3fv(UNIFORM_POINTLIGHT_COLORS, 20, &pointLightColors[0][0]);
     printError("Renderer::setUniformPointLightColors");
 }

@@ -36,8 +36,8 @@ class Renderer
     void setUniformMaterialShine(float materialShine);
     void setUniformCameraPosition(const glm::vec3 &cameraPosition);
     void setUniformActivePointLights(int activePointLights);
-    void setUniformPointLightPositions(const std::array<glm::vec3, 10> &pointLightPositions);
-    void setUniformPointLightColors(const std::array<glm::vec3, 10> &pointLightColors);
+    void setUniformPointLightPositions(const std::array<glm::vec3, 20> &pointLightPositions);
+    void setUniformPointLightColors(const std::array<glm::vec3, 20> &pointLightColors);
 
     void enableWireframe() const { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
     void disableWireframe() const { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
@@ -49,5 +49,4 @@ class Renderer
     void clear();
     void render(const VertexArray *);
     void render(const VertexArray *, GLint idxFrom, GLsizei idxCount);
-    void drawCrosshair();
 };

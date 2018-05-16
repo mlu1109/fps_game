@@ -36,6 +36,31 @@ void World::addEnemyOnRandomLocation(Enemy e)
     m_enemies.emplace_back(std::move(e));
 }
 
+void World::addAmmoBoxOnRandomLocation(GameObject e)
+{
+    float x = rand() % m_terrain.getWidth();
+    float z = rand() % m_terrain.getHeight();
+    float y = m_terrain.getY(x, z);
+    
+    glm::vec3 translate(x, y, z);
+    e.setTranslate(translate);
+    e.update();
+    m_ammoBoxes.emplace_back(std::move(e));
+}
+
+void World::addHealthBoxOnRandomLocation(GameObject e)
+{
+    float x = rand() % m_terrain.getWidth();
+    float z = rand() % m_terrain.getHeight();
+    float y = m_terrain.getY(x, z);
+
+    glm::vec3 translate(x, y, z);
+    e.setTranslate(translate);
+    e.update();
+    m_healthBoxes.emplace_back(std::move(e));
+}
+
+
 void World::moveEnemies(const GameObject &o)
 {
     for (auto &e : m_enemies)
@@ -45,7 +70,7 @@ void World::moveEnemies(const GameObject &o)
     }
 }
 
-void World::handleShot(const Ray &ray)
+bool World::handleShot(const Ray &ray)
 {
     auto it = m_enemies.begin();
     for (; it != m_enemies.end(); ++it)
@@ -53,7 +78,10 @@ void World::handleShot(const Ray &ray)
         if (it->getBoundingSphere().isIntersecting(ray))
             break;
     }
-    
+
     if (it != m_enemies.end())
+    {
         m_enemies.erase(it);
+        return true;
+    }
 }

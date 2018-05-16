@@ -8,5 +8,5 @@ layout(location = 5) uniform vec3 color;
 
 void main(void)
 {
-    outColor = vec4(color, 0.2);
+    outColor = vec4(color, 0.3);
 }

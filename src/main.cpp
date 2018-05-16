@@ -76,6 +76,7 @@ int main()
     World world = initWorld(resourceManager);
     Player player = resourceManager.loadPlayer("assets/models/opengameart/human_low.obj", "assets/models/opengameart/human_low.obj");
     Enemy enemy = resourceManager.loadEnemy("assets/models/opengameart/enemy_low.obj", "assets/models/opengameart/enemy_low.obj");
+    GameObject goBox = resourceManager.loadObject("assets/models/opengameart/PlasticContainer.obj", "assets/models/opengameart/PlasticContainer.obj");
     Camera camera;
     glm::vec3 cameraPlayerOffset = {0.0, 2.0f, 0.0f};
     Mouse mouse(&camera);
@@ -106,7 +107,7 @@ int main()
     const VertexArray *vaSphere = resourceManager.loadVertexArray(OBJ(PATH_OBJ_SPHERE).getMeshes()[0]);
     const VertexArray *vaCube = resourceManager.loadVertexArray(OBJ(PATH_OBJ_CUBE).getMeshes()[0]);
     const VertexArray *vaPlane = resourceManager.loadVertexArray(OBJ("assets/models/plane.obj").getMeshes()[0]);
-    
+
     /*
      * Load Textures
      */
@@ -131,13 +132,21 @@ int main()
          * Enemies
          */
 
-        if (t0 - lastSpawn > 10)
+        if (t0 - lastSpawn > 5)
         {
             if (world.getEnemies().size() < 10)
             {
                 world.addEnemyOnRandomLocation(enemy);
             }
             lastSpawn = t0;
+            if (world.getAmmoBoxes().size() < 2)
+            {
+                world.addAmmoBoxOnRandomLocation(goBox);
+            }
+            if (world.getHealthBoxes().size() < 2)
+            {
+                world.addHealthBoxOnRandomLocation(goBox);
+            }
         }
 
         world.moveEnemies(player);
@@ -149,8 +158,17 @@ int main()
         // Shoot
         if (mouse.hasLeftClicked())
         {
-            Ray ray(camera.getWindowWidth() / 2, camera.getWindowHeight() / 2, camera.getWindowWidth(), camera.getWindowHeight(), camera);
-            world.handleShot(ray);
+            if (player.getAmmo() <= 0)
+            {
+                std::cout << "Insufficient ammo!\n";
+            }
+            else
+            {
+                player.decreaseAmmo();
+                Ray ray(camera.getWindowWidth() / 2, camera.getWindowHeight() / 2, camera.getWindowWidth(), camera.getWindowHeight(), camera);
+                if (world.handleShot(ray))
+                    player.increaseScore();
+            }
         }
 
         // Move
@@ -191,6 +209,58 @@ int main()
         }
 
         /*
+         * Player enemy collisions
+         */
+
+        std::vector<Enemy> &enemies = world.getEnemies();
+        for (auto it = enemies.begin(); it != enemies.end(); ++it)
+        {
+            if (it->getBoundingSphere().isIntersecting(player.getBoundingSphere()))
+            {
+                player.decraseHealthPoints();
+                if (player.getHealthPoints() <= 0)
+                {
+                    std::cout << "You died! You managed to kill " << player.getScore() << " enemies!\n";
+                    return 0;
+                }
+                enemies.erase(it);
+                break;
+            }
+        }
+
+        /*
+         * Player boxes collisions
+         */
+        // Ammo
+        std::vector<GameObject> &ammoBoxes = world.getAmmoBoxes();
+        if (player.getAmmo() < player.getMaxAmmo())
+        {
+            for (auto it = ammoBoxes.begin(); it != ammoBoxes.end(); ++it)
+            {
+                if (it->getBoundingSphere().isIntersecting(player.getBoundingSphere()))
+                {
+                    player.increaseAmmo();
+                    ammoBoxes.erase(it);
+                    break;
+                }
+            }
+        }
+        // Health
+        std::vector<GameObject> &healthBoxes = world.getHealthBoxes();
+        if (player.getHealthPoints() < player.getMaxHealth())
+        {
+            for (auto it = healthBoxes.begin(); it != healthBoxes.end(); ++it)
+            {
+                if (it->getBoundingSphere().isIntersecting(player.getBoundingSphere()))
+                {
+                    player.increaseHealthPoints();
+                    healthBoxes.erase(it);
+                    break;
+                }
+            }
+        }
+
+        /*
          * Render
          */
 
@@ -201,23 +271,47 @@ int main()
         renderer.setUniformViewScreen(camera.getViewScreen());
         renderer.setUniformCameraPosition(camera.getPosition());
 
-        // Point Lights
-        renderer.setUniformActivePointLights((int)world.getEnemies().size());
-        std::array<glm::vec3, 10> pointLightPositions;
-        std::array<glm::vec3, 10> pointLightColors;
-        for (int i = 0; i < world.getEnemies().size(); ++i)
+        renderer.setUniformActivePointLights(world.getEnemies().size() + world.getAmmoBoxes().size() + world.getHealthBoxes().size());
+        std::array<glm::vec3, 20> pointLightPositions;
+        std::array<glm::vec3, 20> pointLightColors;
+        for (size_t i = 0; i < world.getEnemies().size(); ++i)
         {
             pointLightPositions[i] = world.getEnemies()[i].getTransform().T;
             pointLightColors[i] = {1, 0, 0};
+        }
+        for (size_t i = 0; i < world.getAmmoBoxes().size(); ++i)
+        {
+            int offset = world.getEnemies().size();
+            pointLightPositions[offset + i] = world.getAmmoBoxes()[i].getTransform().T;
+            pointLightColors[offset + i] = {0, 0, 1};
+        }
+        for (size_t i = 0; i < world.getHealthBoxes().size(); ++i)
+        {
+            int offset = world.getEnemies().size() + world.getAmmoBoxes().size();
+            pointLightPositions[offset + i] = world.getHealthBoxes()[i].getTransform().T;
+            pointLightColors[offset + i] = {0, 1, 0};
         }
         renderer.setUniformPointLightPositions(pointLightPositions);
         renderer.setUniformPointLightColors(pointLightColors);
         // Static Objects
         for (const auto &o : world.getStaticObjects())
         {
-            if (glm::dot(o.getTransform().T, camera.getPosition() - camera.getDirection()) > 0)
-                o.getModel().render(renderer, camera.getWorldView());
+            //            if (glm::dot(o.getTransform().T, camera.getPosition() - camera.getDirection()) > 0)
+            o.getModel().render(renderer, camera.getWorldView());
         }
+
+        // Ammo boxes
+        for (const auto &a : world.getAmmoBoxes())
+        {
+            a.getModel().render(renderer, camera.getWorldView());
+        }
+
+        // Health boxes
+        for (const auto &h : world.getHealthBoxes())
+        {
+            h.getModel().render(renderer, camera.getWorldView());
+        }
+
         // Enemies
         for (const auto &e : world.getEnemies())
             e.getModel().render(renderer, camera.getWorldView());
@@ -226,7 +320,7 @@ int main()
         // Terrain
         renderer.setUniformModelWorld(glm::mat4{1.0f});
         renderer.setUniformModelViewNormal(glm::transpose(glm::inverse(camera.getWorldView())));
-        renderer.setUniformMaterialAmbient({0.3f, 0.7f, 0.0f});
+        renderer.setUniformMaterialAmbient({0.3f, 0.7f, 0.3f});
         renderer.setUniformMaterialDiffuse({0.5f, 0.5f, 0.5f});
         renderer.render(world.getTerrain().getVertexArray());
         // Water
@@ -241,11 +335,13 @@ int main()
         world.getWater().getModel().render(renderer, camera.getWorldView());
         renderer.disableBlend();
         // BoundingVolumes
+        /*
         renderer.enableBlend();
         renderer.setShader(shaderColorSolid);
         renderer.setUniformViewScreen(camera.getViewScreen());
         renderer.setUniformWorldView(camera.getWorldView());
         renderer.setUniformViewScreen(camera.getViewScreen());
+        
         for (const auto &o : world.getStaticObjects())
         {
             //renderer.setUniformModelWorld(o.getAABB().getModelWorld());
@@ -258,27 +354,60 @@ int main()
                 renderer.render(vaCube);
             }
         }
+        
 
         renderer.setUniformModelWorld(player.getBoundingSphere().getModelWorld());
         renderer.render(vaSphere);
-        //for (const auto &hb : player.getHitboxes())
-        //{
-        //    renderer.setUniformModelWorld(hb.getModelWorld());
-        //    renderer.render(vaCube);
-        //}
         renderer.disableBlend();
-
+        */
         /*
          * HUD
          */
+        renderer.disableDepthTest();
         renderer.enableBlend();
+        // Crosshair
         renderer.setShader(shaderTexture);
-        renderer.setUniformModelWorld(glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, -1.0f}) * glm::scale(glm::mat4{1.0f}, glm::vec3{0.03, 0.03 , 0}));
+        renderer.setUniformModelWorld(glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, -1.0f}) * glm::scale(glm::mat4{1.0f}, glm::vec3{0.03, 0.03, 0}));
         renderer.setUniformWorldView(glm::mat4{1.0f});
         renderer.setUniformViewScreen(glm::mat4{1.0f});
         renderer.setTexture(texCrosshari);
         renderer.render(vaPlane);
-        renderer.disableBlend();
+        // Health/Ammo
+        renderer.setShader(shaderColorSolid);
+        renderer.setUniformViewScreen(glm::mat4{1.0f});
+        renderer.setUniformWorldView(glm::mat4{1.0f});
+        float containerWidth = 0.2;
+        float containerHeight = 0.04;
+        // Health
+        renderer.setUniformLightColor(glm::vec3{0.0f, 0.0f, 0.0f});
+        float containerX = -0.7f;
+        float containerY = -0.8f;
+        renderer.setUniformModelWorld(glm::translate(glm::mat4{1.0f}, glm::vec3{containerX, containerY, -1.0f}) * glm::scale(glm::mat4{1.0f}, glm::vec3{containerWidth, containerHeight, 0}));
+        renderer.render(vaPlane);
+
+        float healthX = containerX;
+        float healthY = containerY;
+        float healthWidth = containerWidth;
+        healthWidth *= (float)player.getHealthPoints() / (float)player.getMaxHealth();
+        float healthHeight = containerHeight;
+        renderer.setUniformModelWorld(glm::translate(glm::mat4{1.0f}, glm::vec3{healthX, healthY, -1.0f}) * glm::scale(glm::mat4{1.0f}, glm::vec3{healthWidth, healthHeight, 0}));
+        renderer.setUniformLightColor(glm::vec3{0.0f, 1.0f, 0.0f});
+        renderer.render(vaPlane);
+        // Ammo
+        renderer.setUniformLightColor(glm::vec3{0.0f, 0.0f, 0.0f});
+        containerX = containerX + 2 * containerWidth;
+        renderer.setUniformModelWorld(glm::translate(glm::mat4{1.0f}, glm::vec3{containerX, containerY, -1.0f}) * glm::scale(glm::mat4{1.0f}, glm::vec3{containerWidth, containerHeight, 0}));
+        renderer.render(vaPlane);
+        float ammoX = containerX;
+        float ammoY = containerY;
+        float ammoWidth = containerWidth;
+        float ammoHeight = containerHeight;
+        ammoWidth *= (float)player.getAmmo() / (float)player.getMaxAmmo();
+        renderer.setUniformModelWorld(glm::translate(glm::mat4{1.0f}, glm::vec3{ammoX, ammoY, -1.0f}) * glm::scale(glm::mat4{1.0f}, glm::vec3{ammoWidth, ammoHeight, 0}));
+        renderer.setUniformLightColor(glm::vec3{0.0f, 1.0f, 1.0f});
+        renderer.render(vaPlane);
+        renderer.enableDepthTest();
+
         window.swapBuffers();
         // Print FPS
         // --------------------------------------------------
@@ -286,7 +415,7 @@ int main()
         double t1 = glfwGetTime();
         if (t1 - t0 >= 1)
         {
-            std::cout << "FPS: " << frameCount << '\n';
+            std::cout << "FPS: " << frameCount << '\r';
             frameCount = 0;
             t0 = t1;
         }
